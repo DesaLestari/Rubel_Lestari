@@ -122,52 +122,86 @@
     </div>
 
     <script>
-        const API_URL = "const API_URL = "https://script.google.com/macros/s/AKfycbw5JR1DzYxebiDYRHddjHXH1caX0fe0hTA9VrvJORjJJW0QRB1XwMHCRCFJlR5A3s8RFA/exec";"; // Ganti jika ada URL baru
+        const API_URL = "https://script.google.com/macros/s/AKfycbw5JR1DzYxebiDYRHddjHXH1caX0fe0hTA9VrvJORjJJW0QRB1XwMHCRCFJlR5A3s8RFA/exec";
         let dbData = { murid: {} };
 
-        function login() {
-            if(document.getElementById('pass').value === 'RubelLestari2026!') {
+        async function login() {
+            const passVal = document.getElementById('pass').value;
+            const loginBtn = document.querySelector('#loginBox button');
+
+            // 1. Cek Password
+            if (passVal !== 'RubelLestari2026!') {
+                alert("Password Salah!\nPastikan huruf besar/kecil sesuai: RubelLestari2026!");
+                return;
+            }
+
+            // 2. Efek Loading
+            loginBtn.innerText = "⏳ Memuat Data...";
+            loginBtn.disabled = true;
+
+            // 3. Ambil Data Cloud dengan Proteksi Error
+            try {
+                const res = await fetch(API_URL);
+                const text = await res.text();
+                
+                // Cek apakah respon berupa JSON valid atau halaman login Google (HTML)
+                if (text.trim().startsWith("<")) {
+                    throw new Error("Izin Apps Script belum dibuka ke 'Anyone' (Siapa saja).");
+                }
+
+                dbData = JSON.parse(text);
+                
+                // Berhasil login
                 document.getElementById('loginBox').style.display = 'none';
                 document.getElementById('mainDashboard').style.display = 'block';
-                fetchCloud();
-            } else { alert("Password Salah!"); }
-        }
+                populateDropdowns();
 
-        async function fetchCloud() {
-            const res = await fetch(API_URL);
-            dbData = await res.json();
-            populateDropdowns();
+            } catch (err) {
+                console.error("Detail Error Login:", err);
+                alert("⚠️ Gagal Masuk ke Dashboard!\n\nSebab: " + err.message + "\n\nPastikan di Apps Script menu 'Who has access' sudah dipilih 'Anyone' (Siapa Saja).");
+            } finally {
+                loginBtn.innerText = "Masuk";
+                loginBtn.disabled = false;
+            }
         }
 
         function switchTab(tid) {
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
             document.getElementById(tid).classList.add('active');
-            event.target.classList.add('active');
+            if(event) event.target.classList.add('active');
         }
 
         function populateDropdowns() {
             const pSel = document.getElementById('presensiMurid');
             const mSel = document.getElementById('editSelectMurid');
             pSel.innerHTML = ''; mSel.innerHTML = '';
-            for(let k in dbData.murid) {
-                pSel.innerHTML += `<option value="${k}">${dbData.murid[k].nama}</option>`;
-                mSel.innerHTML += `<option value="${k}">${dbData.murid[k].nama}</option>`;
+            
+            const muridObj = dbData.murid || {};
+            if (Object.keys(muridObj).length === 0) {
+                pSel.innerHTML = '<option value="">(Belum ada data murid)</option>';
+                mSel.innerHTML = '<option value="">(Belum ada data murid)</option>';
+                return;
+            }
+
+            for(let k in muridObj) {
+                pSel.innerHTML += `<option value="${k}">${muridObj[k].nama}</option>`;
+                mSel.innerHTML += `<option value="${k}">${muridObj[k].nama}</option>`;
             }
             loadMuridField();
         }
 
         function loadMuridField() {
             const key = document.getElementById('editSelectMurid').value;
-            if(dbData.murid[key]) {
+            if(dbData.murid && dbData.murid[key]) {
                 const m = dbData.murid[key];
-                document.getElementById('mNama').value = m.nama;
-                document.getElementById('mPin').value = m.pin;
-                document.getElementById('mImpian').value = m.impian;
-                document.getElementById('mSesi').value = m.sesi;
-                document.getElementById('mTotal').value = m.totalIuran;
-                document.getElementById('mTitipan').value = m.titipan;
-                document.getElementById('mPesan').value = m.pesan;
+                document.getElementById('mNama').value = m.nama || '';
+                document.getElementById('mPin').value = m.pin || '';
+                document.getElementById('mImpian').value = m.impian || '';
+                document.getElementById('mSesi').value = m.sesi || '';
+                document.getElementById('mTotal').value = m.totalIuran || 0;
+                document.getElementById('mTitipan').value = m.titipan || 0;
+                document.getElementById('mPesan').value = m.pesan || '';
             }
         }
 
@@ -240,13 +274,14 @@
             };
             await fetch(API_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
             alert("✅ Data Murid Berhasil Di-update!");
-            fetchCloud();
+            login(); // refresh data
         }
 
         async function tambahMurid() {
             const nama = prompt("Nama Murid Baru:");
             if(nama) {
                 const key = nama.toLowerCase().replace(/[^a-z0-9]/g, '');
+                if(!dbData.murid) dbData.murid = {};
                 dbData.murid[key] = { nama: nama, pin: '1234', impian: 'Cita-cita', sesi: '0 SESI', totalIuran: 0, titipan: 0, pesan: 'Selamat datang!' };
                 populateDropdowns();
                 document.getElementById('editSelectMurid').value = key;
