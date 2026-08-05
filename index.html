@@ -5,291 +5,139 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rubel Lestari Friendship Portal</title>
     <style>
-        :root { --primary: #0d5c3a; --accent: #ffb703; --bg: #f4f7f6; }
-        body { font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 15px; background: var(--bg); color: #333; }
-        header { background: linear-gradient(135deg, #0d5c3a, #1b4332); color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        nav { display: flex; gap: 8px; margin-top: 15px; flex-wrap: wrap; }
-        nav button { flex: 1; min-width: 100px; padding: 10px; border: none; background: rgba(255,255,255,0.15); color: white; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        nav button.active { background: white; color: var(--primary); }
-
-        .tab-content { display: none; margin-top: 20px; }
-        .tab-content.active { display: block; }
-
-        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 20px; }
+        :root { --primary: #0d5c3a; --bg: #f4f7f5; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 15px; color: #333; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 15px; }
+        .btn { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-size: 14px; }
+        .input-group { margin-bottom: 12px; }
+        .input-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #555; }
+        select, input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
         
-        /* Layar Wali & Presensi */
-        .timeline-item { border-left: 3px solid var(--primary); padding-left: 15px; margin-bottom: 20px; position: relative; }
-        .timeline-item::before { content: '📍'; position: absolute; left: -12px; top: 0; background: white; }
-        .badge-time { font-size: 12px; background: #e8f5e9; color: #2e7d32; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
-        .presensi-img { width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px; margin-top: 8px; }
-
-        /* Layar Anak Interaktif */
-        .kids-zone { background: linear-gradient(180deg, #e3f2fd, #ffffff); border: 3px solid #90caf9; text-align: center; border-radius: 16px; padding: 20px; }
-        .avatar-selector span { font-size: 32px; cursor: pointer; padding: 5px; margin: 0 5px; border-radius: 50%; display: inline-block; }
-        .avatar-selector span.selected { background: #ffe082; transform: scale(1.2); }
-        .star-badge { font-size: 28px; color: #f59e0b; font-weight: bold; margin: 10px 0; }
-        .level-tag { background: var(--accent); color: #000; padding: 4px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; }
-        .quiz-box { background: white; padding: 20px; border-radius: 12px; margin-top: 15px; border: 2px dashed #42a5f5; }
-
-        /* Papan Info & Promo */
-        .info-card { border-left: 5px solid var(--accent); margin-bottom: 15px; }
-        .tag-info { font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: bold; text-transform: uppercase; color: white; display: inline-block; margin-bottom: 5px; }
-        .tag-pengumuman { background: #0288d1; }
-        .tag-promo { background: #e65100; }
-
-        input, select { width: 100%; padding: 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; margin: 8px 0; font-size: 14px; }
-        .btn-action { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 6px; width: 100%; font-weight: bold; cursor: pointer; }
-        footer { text-align: center; color: #888; font-size: 13px; margin-top: 30px; }
+        .badge-date { background: #e8f5e9; color: var(--primary); padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; display: inline-block; margin-bottom: 5px; }
+        .timeline-item { border-left: 3px solid var(--primary); padding-left: 12px; margin-bottom: 15px; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; text-align: center; background: #fafafa; padding: 12px; border-radius: 8px; margin-top: 10px; }
+        .stats-val { font-weight: bold; font-size: 15px; margin-top: 4px; }
     </style>
 </head>
 <body>
 
-    <header>
-        <h2 style="margin: 0;">🏡 Rumah Belajar Lestari Friendship</h2>
-        <small>Portal Edukasi, Informasi & Jurnal Tumbuh Kembang Anak</small>
-        <nav>
-            <button id="btn-info" class="active" onclick="openTab('info')">📢 Info & News</button>
-            <button id="btn-wali" onclick="openTab('wali')">👨‍👩‍👧 Jurnal Wali Murid</button>
-            <button id="btn-anak" onclick="openTab('anak')">🚀 Petualangan Anak</button>
-        </nav>
-    </header>
-
-    <!-- TAB 1: PAPAN INFORMASI & PROMO DINAMIS -->
-    <div id="tab-info" class="tab-content active">
-        <h3>📢 Papan Informasi & Kegiatan Terkini</h3>
-        <p style="font-size:13px; color:#666;">Kabar terbaru, pengumuman, dan promo kegiatan di Rubel Lestari.</p>
-        <div id="infoContainer">
-            <div class="card">⏳ Memuat berita dan informasi terbaru...</div>
-        </div>
-    </div>
-
-    <!-- TAB 2: JURNAL WALI MURID & PRESENSI -->
-    <div id="tab-wali" class="tab-content">
-        <div class="card">
-            <h3>🌱 Jurnal Kebanggaan Orang Tua</h3>
+<div class="container">
+    <!-- FORM PILIH ANAK & PIN -->
+    <div class="card">
+        <h4 style="margin-top:0; color:var(--primary);">🌱 Jurnal Kebanggaan Orang Tua</h4>
+        <div class="input-group">
             <label>Pilih Nama Anak:</label>
-            <select id="selectAnakWali"></select>
-            
+            <select id="selectMurid">
+                <option value="">-- Memuat daftar murid... --</option>
+            </select>
+        </div>
+        <div class="input-group">
             <label>Masukkan PIN Rahasia (4 Digit):</label>
-            <input type="password" id="pinInput" maxlength="4" placeholder="****">
-            <button class="btn-action" onclick="bukaJurnal()">Buka Jurnal Anak</button>
+            <input type="password" id="inputPin" placeholder="****" maxlength="4">
+        </div>
+        <button class="btn" onclick="bukaJurnal()">Buka Jurnal Anak</button>
+    </div>
+
+    <!-- TAMPILAN JURNAL ANAK -->
+    <div id="jurnalView" style="display:none;">
+        <div class="card" style="background:#f0f7f4; border-left:5px solid var(--primary);">
+            <h3 id="viewNama" style="margin:0; color:var(--primary);"></h3>
+            <p style="margin:5px 0 0 0; font-size:13px; color:#555;">Cita-Cita Hebat: <b id="viewImpian" style="color:#d97706;"></b></p>
+            <blockquote id="viewPesan" style="margin:10px 0 0 0; font-style:italic; font-size:13px; color:#666;"></blockquote>
         </div>
 
-        <div id="jurnalResult" style="display: none;">
-            <div class="card" style="background: #f1f8e9; border: 1px solid #c8e6c9;">
-                <h3 id="outNamaAnak" style="margin: 0; color: #2e7d32;"></h3>
-                <p>Cita-Cita Hebat: <strong id="outImpianAnak" style="color:#d97706;"></strong></p>
-                <p style="font-style: italic;" id="outPesanTutor"></p>
-            </div>
+        <div class="card">
+            <h4 style="margin-top:0;">📷 Riwayat Kehadiran & Foto Aktivitas Belajar</h4>
+            <div id="presensiList"></div>
+        </div>
 
-            <!-- RIWAYAT PRESENSI HARI/JAM/FOTO -->
-            <div class="card">
-                <h4>📸 Riwayat Kehadiran & Foto Aktivitas Belajar</h4>
-                <div id="presensiTimeline">
-                    <p style="color: #777;">Belum ada catatan presensi.</p>
-                </div>
-            </div>
-
-            <!-- CATATAN TRANSPARANSI (IURAN DIBUAT TRANSPARAN & TERSIMPAN RAPI) -->
-            <div class="card">
-                <h4 style="margin-top: 0;">📊 Catatan Administrasi & Sesi Belajar</h4>
-                <p>Sesi Terjalani: <strong id="outSesi"></strong></p>
-                <div style="display: flex; gap: 10px; background: #fafafa; padding: 10px; border-radius: 8px;">
-                    <div style="flex:1;">Total: <br><strong id="outTotal"></strong></div>
-                    <div style="flex:1; color:#0288d1;">Titipan: <br><strong id="outTitipan"></strong></div>
-                    <div style="flex:1; color:#d32f2f;">Sisa: <br><strong id="outSisa"></strong></div>
-                </div>
+        <div class="card">
+            <h4 style="margin-top:0;">📊 Catatan Administrasi & Sesi Belajar</h4>
+            <div id="viewSesi" style="font-weight:bold; font-size:14px;"></div>
+            <div class="stats-grid">
+                <div><small>Total:</small><div id="viewTotal" class="stats-val">Rp 0</div></div>
+                <div><small>Titipan:</small><div id="viewTitipan" class="stats-val" style="color:green;">Rp 0</div></div>
+                <div><small>Sisa:</small><div id="viewSisa" class="stats-val" style="color:#d32f2f;">Rp 0</div></div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- TAB 3: LAYAR ANAK INTERAKTIF -->
-    <div id="tab-anak" class="tab-content">
-        <div class="card kids-zone">
-            <h2>🎉 Petualangan Bintang Rubel!</h2>
-            <p>Pilih Avatarmu & Kumpulkan Bintangnya!</p>
+<script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbwapXkSgK1_hq4ZdgI4xiOMv7l7wMGvxmSbgsts-_TsZ3qKQVX8ca0NXejOWASU2aOB/exec";
+    let dbData = { murid: {}, presensi: [] };
+
+    window.onload = async function() {
+        try {
+            const res = await fetch(API_URL);
+            dbData = await res.json();
             
-            <div class="avatar-selector">
-                <span class="selected" onclick="pickAvatar(this, '🐱')">🐱</span>
-                <span onclick="pickAvatar(this, '🚀')">🚀</span>
-                <span onclick="pickAvatar(this, '👑')">👑</span>
-                <span onclick="pickAvatar(this, '🦁')">🦁</span>
-            </div>
-
-            <div class="star-badge">
-                ⭐ <span id="starCount">0</span> Bintang
-            </div>
-            <span class="level-tag" id="levelTag">Pramuka Bintang</span>
-
-            <div class="quiz-box">
-                <h3 id="quizQuestion">Berapakah 8 + 7 ?</h3>
-                <input type="number" id="quizAnswer" placeholder="Ketik jawabanmu..." style="text-align: center; font-size: 18px;">
-                <button class="btn-action" style="background: #2196f3; margin-top: 10px;" onclick="checkAnswer()">Jawab & Ambil Bintang ⭐</button>
-                <div id="quizResult" style="margin-top: 10px; font-weight: bold;"></div>
-            </div>
-        </div>
-    </div>
-
-    <footer>
-        <p>© 2026 Rumah Belajar Lestari Friendship | <a href="admin.html" style="color:#777;">🔒 Portal Staf Guru</a></p>
-    </footer>
-
-    <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbw5JR1DzYxebiDYRHddjHXH1caX0fe0hTA9VrvJORjJJW0QRB1XwMHCRCFJlR5A3s8RFA/exec";
-        let dbData = { murid: {}, presensi: [], info: [] };
-        let userBintang = 3;
-
-        async function loadData() {
-            const container = document.getElementById('infoContainer');
-            try {
-                const res = await fetch(API_URL);
-                const data = await res.json();
-                
-                // Salin data dengan penanganan aman (fallback)
-                dbData.murid = data.murid || {};
-                dbData.presensi = data.presensi || [];
-                dbData.info = data.info || [];
-
-                renderInfo();
-                renderDropdownWali();
-            } catch(e) {
-                console.error("Gagal menarik data:", e);
-                if(container) {
-                    container.innerHTML = `
-                        <div class="card" style="border-left: 5px solid #dc3545; background: #fff8f8;">
-                            <h4 style="color: #dc3545; margin: 0 0 5px 0;">⚠️ Gagal Terhubung ke Database</h4>
-                            <p style="font-size:13px; margin:0; color:#555;">
-                                Pastikan pengaturan <b>Who has access</b> di Apps Script sudah diatur ke <b>Anyone (Siapa Saja)</b> dan URL Web App sudah benar.
-                            </p>
-                        </div>`;
-                }
+            const sel = document.getElementById('selectMurid');
+            sel.innerHTML = '<option value="">-- Pilih Nama Anak --</option>';
+            
+            for (let key in dbData.murid) {
+                const m = dbData.murid[key];
+                const opt = document.createElement('option');
+                opt.value = key;
+                opt.textContent = m.nama;
+                sel.appendChild(opt);
             }
+        } catch(e) {
+            alert("Gagal memuat data. Periksa koneksi internet.");
+        }
+    };
+
+    function bukaJurnal() {
+        const key = document.getElementById('selectMurid').value;
+        const pin = document.getElementById('inputPin').value;
+
+        if (!key) { alert("Pilih nama anak terlebih dahulu!"); return; }
+        
+        const m = dbData.murid[key];
+        if (String(m.pin) !== String(pin)) {
+            alert("PIN Rahasia Salah!");
+            return;
         }
 
-        function openTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-            document.getElementById('tab-' + tabName).classList.add('active');
-            document.getElementById('btn-' + tabName).classList.add('active');
-        }
+        document.getElementById('viewNama').textContent = m.nama;
+        document.getElementById('viewImpian').textContent = m.impian || '-';
+        document.getElementById('viewPesan').textContent = `"${m.pesan || 'Selamat belajar!'}"`;
 
-        function renderInfo() {
-            const container = document.getElementById('infoContainer');
-            container.innerHTML = '';
-            
-            if(!dbData.info || dbData.info.length === 0) {
-                container.innerHTML = '<div class="card">Belum ada pengumuman atau kegiatan baru hari ini.</div>';
-                return;
-            }
+        const sesi = parseInt(m.sesi || 0);
+        const tarif = parseInt(m.tarif || 0);
+        const total = sesi * tarif;
+        const titipan = parseInt(m.titipan || 0);
+        const sisa = total - titipan;
 
-            const listInfo = [...dbData.info].reverse();
-            listInfo.forEach(item => {
-                const isPromo = item.kategori === 'Promo';
-                const card = document.createElement('div');
-                card.className = 'card info-card';
-                card.innerHTML = `
-                    <span class="tag-info ${isPromo ? 'tag-promo' : 'tag-pengumuman'}">${item.kategori || 'Info'}</span>
-                    <small style="float:right; color:#888;">${item.tanggal || ''}</small>
-                    <h3 style="margin:5px 0;">${item.judul || 'Pengumuman'}</h3>
-                    <p style="margin: 5px 0; color:#444;">${item.isi || ''}</p>
-                    ${item.foto ? `<img src="${item.foto}" style="width:100%; max-height:300px; object-fit:cover; border-radius:8px; margin-top:10px;">` : ''}
+        document.getElementById('viewSesi').textContent = `Sesi Terjalani: ${sesi}`;
+        document.getElementById('viewTotal').textContent = `Rp ${total.toLocaleString('id-ID')}`;
+        document.getElementById('viewTitipan').textContent = `Rp ${titipan.toLocaleString('id-ID')}`;
+        document.getElementById('viewSisa').textContent = `Rp ${sisa.toLocaleString('id-ID')}`;
+
+        // Render Riwayat Presensi
+        const presList = document.getElementById('presensiList');
+        presList.innerHTML = '';
+        
+        const userPresensi = dbData.presensi.filter(p => p.key === key).reverse();
+
+        if (userPresensi.length === 0) {
+            presList.innerHTML = '<p style="color:#888;">Belum ada catatan presensi.</p>';
+        } else {
+            userPresensi.forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'timeline-item';
+                div.innerHTML = `
+                    <span class="badge-date">⏰ ${p.waktu}</span>
+                    <div style="font-weight:bold; font-size:13px;">${p.catatan}</div>
+                    ${p.foto ? `<img src="${p.foto}" style="max-width:100%; border-radius:8px; margin-top:8px;">` : ''}
                 `;
-                container.appendChild(card);
+                presList.appendChild(div);
             });
         }
 
-        function renderDropdownWali() {
-            const sel = document.getElementById('selectAnakWali');
-            sel.innerHTML = '<option value="">-- Pilih Nama Anak --</option>';
-            
-            if(Object.keys(dbData.murid).length === 0) {
-                sel.innerHTML = '<option value="">(Belum ada data murid)</option>';
-                return;
-            }
-
-            for(let k in dbData.murid) {
-                let opt = document.createElement('option');
-                opt.value = k; 
-                opt.innerText = dbData.murid[k].nama;
-                sel.appendChild(opt);
-            }
-        }
-
-        function bukaJurnal() {
-            const key = document.getElementById('selectAnakWali').value;
-            const pin = document.getElementById('pinInput').value;
-
-            if(!key || !dbData.murid[key]) { alert("Pilih nama anak terlebih dahulu!"); return; }
-            const child = dbData.murid[key];
-
-            if(String(pin) !== String(child.pin)) { alert("PIN Rahasia Salah!"); return; }
-
-            document.getElementById('outNamaAnak').innerText = child.nama;
-            document.getElementById('outImpianAnak').innerText = child.impian || '-';
-            document.getElementById('outPesanTutor').innerText = `"${child.pesan || 'Tetap semangat belajar!'}"`;
-            document.getElementById('outSesi').innerText = child.sesi || '0 Sesi';
-            document.getElementById('outTotal').innerText = 'Rp ' + Number(child.totalIuran||0).toLocaleString('id-ID');
-            document.getElementById('outTitipan').innerText = 'Rp ' + Number(child.titipan||0).toLocaleString('id-ID');
-            const sisa = Number(child.totalIuran||0) - Number(child.titipan||0);
-            document.getElementById('outSisa').innerText = 'Rp ' + sisa.toLocaleString('id-ID');
-
-            // Render Timeline Presensi
-            const pContainer = document.getElementById('presensiTimeline');
-            pContainer.innerHTML = '';
-            const logs = (dbData.presensi || []).filter(p => p.key === key);
-
-            if(logs.length === 0) {
-                pContainer.innerHTML = '<p style="color:#888;">Belum ada catatan presensi/foto kegiatan.</p>';
-            } else {
-                [...logs].reverse().forEach(log => {
-                    const item = document.createElement('div');
-                    item.className = 'timeline-item';
-                    item.innerHTML = `
-                        <span class="badge-time">🕒 ${log.waktu || ''}</span>
-                        <p style="margin:5px 0; font-weight:bold;">${log.catatan || 'Hadir mengikuti sesi belajar.'}</p>
-                        ${log.foto ? `<img src="${log.foto}" class="presensi-img">` : ''}
-                    `;
-                    pContainer.appendChild(item);
-                });
-            }
-
-            document.getElementById('jurnalResult').style.display = 'block';
-        }
-
-        function pickAvatar(el, icon) {
-            document.querySelectorAll('.avatar-selector span').forEach(s => s.classList.remove('selected'));
-            el.classList.add('selected');
-        }
-
-        function playSound() {
-            try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.connect(gain); gain.connect(ctx.destination);
-                osc.frequency.setValueAtTime(523, ctx.currentTime);
-                osc.frequency.setValueAtTime(659, ctx.currentTime + 0.1);
-                osc.frequency.setValueAtTime(783, ctx.currentTime + 0.2);
-                gain.gain.setValueAtTime(0.1, ctx.currentTime);
-                osc.start(); osc.stop(ctx.currentTime + 0.4);
-            } catch(e){}
-        }
-
-        function checkAnswer() {
-            const ans = document.getElementById('quizAnswer').value;
-            const res = document.getElementById('quizResult');
-            if(parseInt(ans) === 15) {
-                userBintang += 2;
-                document.getElementById('starCount').innerText = userBintang;
-                res.style.color = 'green';
-                res.innerText = "🎉 HEBAT SEKALI! Jawabanmu Benar (+2 Bintang)";
-                playSound();
-                if(userBintang >= 5) document.getElementById('levelTag').innerText = "🌟 Cendekiawan Muda";
-            } else {
-                res.style.color = 'red';
-                res.innerText = "❌ Masih kurang tepat, coba dihitung lagi yuk!";
-            }
-        }
-
-        loadData();
-    </script>
+        document.getElementById('jurnalView').style.display = 'block';
+    }
+</script>
+</body>
+</html>
