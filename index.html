@@ -3,17 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rubel Lestari Friendship - Portal Utama</title>
+    <title>Rubel Lestari Friendship</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background-color: #f4f6f8; color: #333; }
         header { background: #0d5c3a; color: white; padding: 15px 20px; border-radius: 8px; }
-        nav { margin-top: 10px; }
-        nav button { margin-right: 5px; padding: 8px 14px; border: none; background: #148052; color: white; border-radius: 4px; cursor: pointer; }
+        nav { margin-top: 15px; display: flex; gap: 8px; }
+        nav button { padding: 8px 16px; border: none; background: #148052; color: white; border-radius: 6px; cursor: pointer; font-weight: 500; transition: 0.2s; }
+        nav button:hover { background: #1a9e66; }
         nav button.active { background: #ffffff; color: #0d5c3a; font-weight: bold; }
-        .container { background: white; padding: 25px; margin-top: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        
+        .tab-content { display: none; background: white; padding: 25px; margin-top: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .tab-content.active { display: block; }
+
+        input, select { width: 100%; max-width: 300px; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; display: block; }
+        .btn-submit { background: #0d5c3a; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
+
         footer { margin-top: 40px; text-align: center; color: #777; font-size: 14px; border-top: 1px solid #ddd; padding-top: 15px; }
-        footer a { color: #aaa; text-decoration: none; font-size: 13px; }
-        footer a:hover { text-decoration: underline; }
+        footer a { color: #888; text-decoration: none; font-size: 13px; }
+        footer a:hover { text-decoration: underline; color: #0d5c3a; }
     </style>
 </head>
 <body>
@@ -21,22 +28,54 @@
     <header>
         <h2>🏠 Rubel Lestari Friendship</h2>
         <nav>
-            <button>✨ Info & Profil</button>
-            <button class="active">👨‍👩‍👧 Wali Murid</button>
-            <button>🚀 Layar Anak</button>
+            <button id="btn-info" onclick="openTab('info')">✨ Info & Profil</button>
+            <button id="btn-wali" class="active" onclick="openTab('wali')">👨‍👩‍👧 Wali Murid</button>
+            <button id="btn-anak" onclick="openTab('anak')">🚀 Layar Anak</button>
         </nav>
     </header>
 
-    <div class="container">
-        <h3>Selamat Datang di Portal Wali Murid & Siswa</h3>
-        <p>Silakan pilih nama anak dan masukkan <strong>PIN 4-Digit</strong> untuk melihat laporan perkembangan.</p>
+    <!-- Konten 1: Info & Profil -->
+    <div id="tab-info" class="tab-content">
+        <h3>Info & Profil Rumah Belajar</h3>
+        <p>Selamat datang di Rumah Belajar Lestari Friendship! Tempat belajar yang menyenangkan dan ramah anak.</p>
+    </div>
+
+    <!-- Konten 2: Wali Murid (Aktif secara default) -->
+    <div id="tab-wali" class="tab-content active">
+        <h3>PILIH NAMA ANAK BAPAK/IBU:</h3>
+        <select id="namaAnak">
+            <option value="">-- Pilih Nama Anak --</option>
+            <option value="hana">hana (SD)</option>
+        </select>
+
+        <h4>🔒 Masukkan PIN Rahasia 4-Digit Anak:</h4>
+        <input type="password" maxlength="4" placeholder="****">
+        <button class="btn-submit">Buka Laporan</button>
+    </div>
+
+    <!-- Konten 3: Layar Anak -->
+    <div id="tab-anak" class="tab-content">
+        <h3>Layar Interaktif Anak</h3>
+        <p>Area khusus aktivitas interaktif dan materi siswa.</p>
     </div>
 
     <footer>
         <p>© 2026 Rubel Lestari Friendship</p>
-        <!-- Tautan menuju Laman Admin Terpisah -->
         <p><a href="admin.html">🔒 Portal Staf / Tutor</a></p>
     </footer>
+
+    <script>
+        function openTab(tabName) {
+            // Sembunyikan semua tab content
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            // Reset status tombol navigasi
+            document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
+
+            // Tampilkan tab yang dipilih & aktifkan tombolnya
+            document.getElementById('tab-' + tabName).classList.add('active');
+            document.getElementById('btn-' + tabName).classList.add('active');
+        }
+    </script>
 
 </body>
 </html>
