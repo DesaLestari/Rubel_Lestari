@@ -17,16 +17,17 @@
             --card-bg: #ffffff;
             --text-dark: #1e293b;
             --text-muted: #64748b;
+            --danger: #ef4444;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background-color: var(--bg-light); color: var(--text-dark); min-height: 100vh; }
+        body { background-color: var(--bg-light); color: var(--text-dark); min-height: 100vh; padding-bottom: 50px; }
 
         /* HEADER & HERO */
         .header-bg {
             background: linear-gradient(135deg, #0f172a 0%, #0f2b1d 100%);
             color: white;
-            padding: 25px 20px 40px;
+            padding: 20px 20px 35px;
             border-bottom-left-radius: 24px;
             border-bottom-right-radius: 24px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.15);
@@ -38,10 +39,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-bottom: 20px;
         }
 
-        .brand { display: flex; align-items: center; gap: 12px; }
+        .brand { display: flex; align-items: center; gap: 12px; cursor: pointer; }
         .brand-icon {
             background: var(--accent);
             width: 42px;
@@ -53,6 +53,8 @@
             font-size: 20px;
             color: white;
         }
+
+        .nav-actions { display: flex; gap: 10px; }
 
         .btn-portal {
             background: rgba(255, 255, 255, 0.15);
@@ -70,28 +72,39 @@
         }
         .btn-portal:hover { background: var(--accent); border-color: var(--accent); }
 
+        .btn-logout {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+        }
+        .btn-logout:hover { background: var(--danger); color: white; }
+
         .hero-title {
             max-width: 1100px;
-            margin: 10px auto 0;
+            margin: 20px auto 0;
             text-align: center;
         }
-        .hero-title h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
-        .hero-title p { color: #94a3b8; margin-top: 8px; font-size: 14px; }
+        .hero-title h1 { font-size: 26px; font-weight: 800; }
+        .hero-title p { color: #94a3b8; margin-top: 6px; font-size: 13px; }
 
-        /* MAIN CONTAINER */
-        .container { max-width: 1100px; margin: -25px auto 40px; padding: 0 15px; }
+        /* CONTAINER & VIEWS */
+        .container { max-width: 1100px; margin: -20px auto 0; padding: 0 15px; }
+        .view-section { display: none; }
+        .view-section.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* STATS GRID */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .stat-card {
             background: var(--card-bg);
-            padding: 20px;
+            padding: 18px;
             border-radius: 16px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.03);
             display: flex;
@@ -101,228 +114,221 @@
         }
 
         .stat-icon {
-            width: 50px;
-            height: 50px;
+            width: 46px;
+            height: 46px;
             border-radius: 12px;
             background: #ecfdf5;
             color: var(--accent);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
+            font-size: 20px;
         }
 
-        .stat-info label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-        .stat-info div { font-size: 22px; font-weight: 800; color: var(--text-dark); margin-top: 2px; }
+        .stat-info label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+        .stat-info div { font-size: 20px; font-weight: 800; color: var(--text-dark); margin-top: 2px; }
 
-        /* PUBLIC KIDS ZONE */
-        .section-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        /* KIDS ZONE */
+        .section-title { font-size: 18px; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .kids-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .kids-card { background: var(--card-bg); border-radius: 16px; padding: 22px; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .search-box { width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 10px; margin-top: 10px; font-size: 14px; outline: none; }
 
-        .kids-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
+        /* ADMIN TABS & CARDS */
+        .card { background: var(--card-bg); border-radius: 16px; padding: 20px; border: 1px solid #e2e8f0; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+        .admin-nav { display: flex; gap: 10px; border-bottom: 2px solid #e2e8f0; margin-bottom: 20px; }
+        .admin-nav button { padding: 10px 15px; border: none; background: none; font-weight: 700; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; }
+        .admin-nav button.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-        .kids-card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 25px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-        }
-
-        .search-box {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #cbd5e1;
-            border-radius: 10px;
-            margin-top: 10px;
-            outline: none;
-            font-size: 14px;
-        }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; }
+        .form-control { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; }
+        
+        .btn-action { background: var(--accent); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        .btn-action:hover { background: var(--accent-hover); }
 
         /* MODAL POPUP */
         .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(5px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 15px;
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(5px);
+            display: none; align-items: center; justify-content: center; z-index: 1000; padding: 15px;
         }
-
         .modal-content {
-            background: white;
-            width: 100%;
-            max-width: 420px;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            animation: popIn 0.25s ease-out;
+            background: white; width: 100%; max-width: 400px; border-radius: 20px; padding: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2); animation: popIn 0.2s ease-out;
         }
+        @keyframes popIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        @keyframes popIn {
-            from { transform: scale(0.9); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .role-tabs {
-            display: flex;
-            background: #f1f5f9;
-            padding: 4px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            background: transparent;
-            font-weight: 600;
-            color: var(--text-muted);
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 13px;
-        }
-
+        .role-tabs { display: flex; background: #f1f5f9; padding: 4px; border-radius: 10px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 8px; border: none; background: transparent; font-weight: 600; color: var(--text-muted); border-radius: 8px; cursor: pointer; font-size: 13px; }
         .tab-btn.active { background: white; color: var(--text-dark); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; }
-        .form-control { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 14px; }
-
-        .btn-submit {
-            width: 100%;
-            padding: 12px;
-            background: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        .btn-submit:hover { background: var(--accent-hover); }
+        /* TIMELINE WALI */
+        .timeline-item { border-left: 3px solid var(--accent); padding-left: 12px; margin-bottom: 12px; }
+        .badge-date { background: #ecfdf5; color: var(--accent); padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; display: inline-block; margin-bottom: 4px; }
     </style>
 </head>
 <body>
 
-    <!-- HEADER / HERO -->
+    <!-- HEADER / NAVIGATION -->
     <div class="header-bg">
         <div class="navbar">
-            <div class="brand">
+            <div class="brand" onclick="goHome()">
                 <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
                 <div>
                     <h3 style="font-size: 16px; font-weight:700;">Rubel Lestari</h3>
                     <p style="font-size: 11px; color:#94a3b8;">Friendship Portal</p>
                 </div>
             </div>
-            <button class="btn-portal" onclick="openModal()"><i class="fa-solid fa-lock"></i> Portal Akses</button>
+            
+            <div class="nav-actions">
+                <button class="btn-portal" id="btnAuth" onclick="openModal()"><i class="fa-solid fa-lock"></i> Portal Akses</button>
+                <button class="btn-portal btn-logout" id="btnLogout" onclick="logout()" style="display:none;"><i class="fa-solid fa-right-from-bracket"></i> Keluar</button>
+            </div>
         </div>
 
-        <div class="hero-title">
+        <div class="hero-title" id="heroHeader">
             <h1>Rumah Belajar Lestari</h1>
             <p>Ruang Belajar Ceria, Nyaman, Aman, dan Terpercaya untuk Buah Hati Anda</p>
         </div>
     </div>
 
-    <!-- MAIN CONTENT -->
+    <!-- MAIN CONTENT CONTAINER -->
     <div class="container">
         
-        <!-- RINGKASAN STATISTIK -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fa-solid fa-children"></i></div>
-                <div class="stat-info">
-                    <label>Siswa Aktif</label>
-                    <div id="statSiswa">--</div>
+        <!-- 1. VIEW BERANDA / PUBLIC (DEFAULT) -->
+        <div id="viewPublic" class="view-section active">
+            <!-- STATS PUBLIC -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-children"></i></div>
+                    <div class="stat-info">
+                        <label>Siswa Aktif</label>
+                        <div id="pubSiswa">--</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#eff6ff; color:#3b82f6;"><i class="fa-solid fa-book-open-reader"></i></div>
+                    <div class="stat-info">
+                        <label>Total Presensi</label>
+                        <div id="pubSesi">--</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#fef3c7; color:#d97706;"><i class="fa-solid fa-award"></i></div>
+                    <div class="stat-info">
+                        <label>Metode Belajar</label>
+                        <div>Interaktif</div>
+                    </div>
                 </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon" style="background:#eff6ff; color:#3b82f6;"><i class="fa-solid fa-book-open-reader"></i></div>
-                <div class="stat-info">
-                    <label>Total Sesi Belajar</label>
-                    <div id="statSesi">--</div>
+
+            <!-- ZONA ANAK -->
+            <div class="section-title"><i class="fa-solid fa-gamepad" style="color:var(--accent);"></i> Zona Belajar & Edukasi Anak</div>
+            <div class="kids-grid">
+                <div class="kids-card">
+                    <h4 style="display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-spell-check" style="color:#3b82f6;"></i> Kamus Mini Kata Bergambar</h4>
+                    <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">Cari kata sederhana Bahasa Indonesia - Inggris:</p>
+                    <input type="text" class="search-box" id="searchKamus" placeholder="Cari kata (contoh: Kucing, Buku, Rumah)..." onkeyup="cariKamus()">
+                    <div id="kamusResult" style="margin-top:12px; padding:10px; background:#f8fafc; border-radius:8px; font-size:13px; font-weight:600; color:#334155;">💡 Ketik kata di atas untuk memulai.</div>
                 </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon" style="background:#fef3c7; color:#d97706;"><i class="fa-solid fa-award"></i></div>
-                <div class="stat-info">
-                    <label>Metode Belajar</label>
-                    <div>Interaktif</div>
+
+                <div class="kids-card">
+                    <h4 style="display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-puzzle-piece" style="color:#ec4899;"></i> Game Asah Otak Mini</h4>
+                    <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">Berapakah hasil dari 5 + 3 ?</p>
+                    <div style="display:flex; gap:8px; margin-top:10px;">
+                        <input type="number" id="jawabGame" class="search-box" style="margin:0;" placeholder="Jawabanmu...">
+                        <button onclick="cekJawaban()" class="btn-action">Cek</button>
+                    </div>
+                    <div id="gameResult" style="margin-top:10px; font-size:12px; font-weight:bold;"></div>
                 </div>
             </div>
         </div>
 
-        <!-- ZONA ANAK (PUBLIC & UNLOCKED) -->
-        <div class="section-title">
-            <i class="fa-solid fa-gamepad" style="color:var(--accent);"></i> Zona Belajar & Edukasi Anak
-        </div>
-
-        <div class="kids-grid">
-            <!-- FITUR 1: KAMUS MINI -->
-            <div class="kids-card">
-                <h4 style="display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-spell-check" style="color:#3b82f6;"></i> Kamus Kata Bergambar</h4>
-                <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">Cari kata sederhana dalam Bahasa Indonesia - Inggris:</p>
-                <input type="text" class="search-box" id="searchKamus" placeholder="Cari kata (contoh: Kucing, Buku, Rumah)..." onkeyup="cariKamus()">
-                <div id="kamusResult" style="margin-top:15px; padding:12px; background:#f8fafc; border-radius:8px; font-size:13px; font-weight:600; color:#334155;">
-                    💡 Ketik kata di atas untuk memulai pencarian.
-                </div>
+        <!-- 2. VIEW WALI MURID (JURNAL ANAK) -->
+        <div id="viewWali" class="view-section">
+            <div class="card" style="background:#f0f7f4; border-left:5px solid var(--accent);">
+                <h2 id="waliNama" style="color:var(--primary);">--</h2>
+                <p style="font-size:13px; color:#555; margin-top:4px;">Cita-Cita Hebat: <b id="waliImpian" style="color:#d97706;">--</b></p>
+                <blockquote id="waliPesan" style="margin-top:8px; font-style:italic; font-size:13px; color:#666;">--</blockquote>
             </div>
 
-            <!-- FITUR 2: TEBAK ANGKA/KUIS MINI -->
-            <div class="kids-card">
-                <h4 style="display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-puzzle-piece" style="color:#ec4899;"></i> Game Asah Otak Mini</h4>
-                <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">Berapakah hasil dari <span id="soalA">5</span> + <span id="soalB">3</span>?</p>
-                <div style="display:flex; gap:10px; margin-top:10px;">
-                    <input type="number" id="jawabGame" class="search-box" style="margin:0;" placeholder="Jawabanmu...">
-                    <button onclick="cekJawaban()" style="background:var(--accent); color:white; border:none; padding:0 20px; border-radius:10px; font-weight:bold; cursor:pointer;">Cek</button>
+            <div class="card">
+                <h4 style="margin-bottom:12px;"><i class="fa-solid fa-clock-rotate-left" style="color:var(--accent);"></i> Riwayat Kehadiran Belajar</h4>
+                <div id="waliPresensiList"></div>
+            </div>
+
+            <div class="card">
+                <h4 style="margin-bottom:12px;"><i class="fa-solid fa-wallet" style="color:var(--accent);"></i> Catatan Administrasi Sesi</h4>
+                <div id="waliSesiCount" style="font-weight:bold; font-size:14px; margin-bottom:10px;">Sesi Terjalani: 0</div>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; text-align:center; background:#f8fafc; padding:12px; border-radius:10px;">
+                    <div><small style="font-size:11px; color:#666;">Total</small><div id="waliTotal" style="font-weight:bold;">Rp 0</div></div>
+                    <div><small style="font-size:11px; color:#666;">Titipan</small><div id="waliTitipan" style="font-weight:bold; color:green;">Rp 0</div></div>
+                    <div><small style="font-size:11px; color:#666;">Sisa</small><div id="waliSisa" style="font-weight:bold; color:red;">Rp 0</div></div>
                 </div>
-                <div id="gameResult" style="margin-top:10px; font-size:12px; font-weight:bold;"></div>
+            </div>
+        </div>
+
+        <!-- 3. VIEW ADMIN GURU (DASHBOARD GURU) -->
+        <div id="viewAdmin" class="view-section">
+            <div class="admin-nav">
+                <button id="tabAbsen" class="active" onclick="switchAdminTab('absen')"><i class="fa-solid fa-user-check"></i> Presensi Cepat</button>
+                <button id="tabMurid" onclick="switchAdminTab('murid')"><i class="fa-solid fa-users"></i> Kelola Murid</button>
+            </div>
+
+            <!-- TAB 1: PRESENSI -->
+            <div id="adminTabAbsen" class="card">
+                <h4 style="margin-bottom:15px;">Catat Kehadiran Baru</h4>
+                <div class="form-group">
+                    <label>PILIH MURID</label>
+                    <select id="admAbsenMurid" class="form-control"></select>
+                </div>
+                <div class="form-group">
+                    <label>CATATAN AKTIVITAS / KETERANGAN</label>
+                    <input type="text" id="admAbsenNote" class="form-control" placeholder="Contoh: Hadir Sesi Belajar (Hadir Cepat)">
+                </div>
+                <button class="btn-action" onclick="simpanPresensiAdmin()"><i class="fa-solid fa-plus"></i> Simpan Presensi</button>
+            </div>
+
+            <!-- TAB 2: KELOLA MURID -->
+            <div id="adminTabMurid" class="card" style="display:none;">
+                <h4 style="margin-bottom:15px;">Tambah Murid Baru</h4>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <div class="form-group"><label>NAMA MURID</label><input type="text" id="addNama" class="form-control"></div>
+                    <div class="form-group"><label>PIN (4 DIGIT)</label><input type="password" id="addPin" class="form-control" maxlength="4"></div>
+                    <div class="form-group"><label>TARIF PER HARI (RP)</label><input type="number" id="addTarif" class="form-control" placeholder="15000"></div>
+                    <div class="form-group"><label>CITA-CITA / HEBAT</label><input type="text" id="addImpian" class="form-control"></div>
+                </div>
+                <button class="btn-action" onclick="tambahMuridAdmin()"><i class="fa-solid fa-user-plus"></i> Tambah Murid</button>
             </div>
         </div>
 
     </div>
 
-    <!-- MODAL POPUP LOGIN -->
+    <!-- MODAL LOGIN POPUP -->
     <div class="modal-overlay" id="loginModal">
         <div class="modal-content">
-            <div style="display:flex; justify-shadow:space-between; align-items:center; margin-bottom:20px;">
-                <h3 style="font-size:16px;">Akses Masuk Portal</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h3 style="font-size:16px;">Akses Portal</h3>
                 <button onclick="closeModal()" style="background:none; border:none; font-size:18px; cursor:pointer; color:var(--text-muted);"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
-            <!-- TABS PILIHAN -->
             <div class="role-tabs">
-                <button class="tab-btn active" id="tabWaliBtn" onclick="switchTab('wali')"><i class="fa-solid fa-user-nurse"></i> Wali Murid</button>
-                <button class="tab-btn" id="tabAdminBtn" onclick="switchTab('admin')"><i class="fa-solid fa-user-shield"></i> Admin / Guru</button>
+                <button class="tab-btn active" id="tabWaliBtn" onclick="switchLoginRole('wali')"><i class="fa-solid fa-user-nurse"></i> Wali Murid</button>
+                <button class="tab-btn" id="tabAdminBtn" onclick="switchLoginRole('admin')"><i class="fa-solid fa-user-shield"></i> Admin / Guru</button>
             </div>
 
-            <!-- FORM WALI MURID -->
+            <!-- FORM WALI -->
             <form id="formWali" onsubmit="loginWali(event)">
                 <div class="form-group">
                     <label>PILIH NAMA ANAK</label>
-                    <select id="selectMurid" class="form-control" required>
-                        <option value="">-- Memuat data murid... --</option>
-                    </select>
+                    <select id="selectMurid" class="form-control" required></select>
                 </div>
                 <div class="form-group">
                     <label>PIN RAHASIA (4 DIGIT)</label>
                     <input type="password" id="pinWali" class="form-control" maxlength="4" placeholder="****" required>
                 </div>
-                <button type="submit" class="btn-submit">Buka Jurnal Anak</button>
+                <button type="submit" class="btn-action" style="width:100%; margin-top:10px;">Buka Jurnal Anak</button>
             </form>
 
             <!-- FORM ADMIN -->
@@ -331,7 +337,7 @@
                     <label>KATA SANDI PENGELOLA / GURU</label>
                     <input type="password" id="passAdmin" class="form-control" placeholder="Masukkan password admin" required>
                 </div>
-                <button type="submit" class="btn-submit" style="background:#0f172a;">Masuk Mode Admin</button>
+                <button type="submit" class="btn-action" style="width:100%; margin-top:10px; background:#0f172a;">Masuk Mode Admin</button>
             </form>
         </div>
     </div>
@@ -340,36 +346,62 @@
         const API_URL = "https://script.google.com/macros/s/AKfycbwapXkSgK1_hq4ZdgI4xiOMv7l7wMGvxmSbgsts-_TsZ3qKQVX8ca0NXejOWASU2aOB/exec";
         let dbData = { murid: {}, presensi: [] };
 
-        // INIT LOAD
         window.onload = async function() {
+            await loadData();
+        };
+
+        async function loadData() {
             try {
                 const res = await fetch(API_URL);
                 dbData = await res.json();
                 
-                // Update Stats Dashboard
-                const totalMurid = Object.keys(dbData.murid).length;
-                document.getElementById('statSiswa').textContent = totalMurid + " Anak";
-                document.getElementById('statSesi').textContent = dbData.presensi.length + " Sesi";
+                // Update Public Stats
+                const totalMurid = Object.keys(dbData.murid || {}).length;
+                document.getElementById('pubSiswa').textContent = totalMurid + " Anak";
+                document.getElementById('pubSesi').textContent = (dbData.presensi || []).length + " Sesi";
 
-                // Populate Dropdown Wali
-                const sel = document.getElementById('selectMurid');
-                sel.innerHTML = '<option value="">-- Pilih Nama Anak --</option>';
+                // Populate Dropdowns
+                const selWali = document.getElementById('selectMurid');
+                const selAdm = document.getElementById('admAbsenMurid');
+                selWali.innerHTML = '<option value="">-- Pilih Nama Anak --</option>';
+                selAdm.innerHTML = '<option value="">-- Pilih Nama Anak --</option>';
+
                 for (let key in dbData.murid) {
-                    const opt = document.createElement('option');
-                    opt.value = key;
-                    opt.textContent = dbData.murid[key].nama;
-                    sel.appendChild(opt);
+                    const m = dbData.murid[key];
+                    const opt1 = document.createElement('option'); opt1.value = key; opt1.textContent = m.nama;
+                    const opt2 = document.createElement('option'); opt2.value = key; opt2.textContent = m.nama;
+                    selWali.appendChild(opt1);
+                    selAdm.appendChild(opt2);
                 }
             } catch(e) {
-                console.log("Memuat mode offline/tanpa database");
+                console.log("Offline mode or load failed");
             }
-        };
+        }
+
+        // NAVIGATION CONTROLLER
+        function showView(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            
+            if(viewId === 'viewPublic') {
+                document.getElementById('btnAuth').style.display = 'flex';
+                document.getElementById('btnLogout').style.display = 'none';
+                document.getElementById('heroHeader').style.display = 'block';
+            } else {
+                document.getElementById('btnAuth').style.display = 'none';
+                document.getElementById('btnLogout').style.display = 'flex';
+                document.getElementById('heroHeader').style.display = 'none';
+            }
+        }
+
+        function goHome() { showView('viewPublic'); }
+        function logout() { showView('viewPublic'); alert("Berhasil keluar."); }
 
         // MODAL CONTROLLER
         function openModal() { document.getElementById('loginModal').style.display = 'flex'; }
         function closeModal() { document.getElementById('loginModal').style.display = 'none'; }
 
-        function switchTab(role) {
+        function switchLoginRole(role) {
             if(role === 'wali') {
                 document.getElementById('tabWaliBtn').classList.add('active');
                 document.getElementById('tabAdminBtn').classList.remove('active');
@@ -383,41 +415,7 @@
             }
         }
 
-        // KAMUS MINI LOGIC
-        const dictionary = {
-            "kucing": "Cat 🐱",
-            "buku": "Book 📖",
-            "rumah": "House 🏠",
-            "pensil": "Pencil ✏️",
-            "sekolah": "School 🏫",
-            "bintang": "Star 🌟"
-        };
-
-        function cariKamus() {
-            const input = document.getElementById('searchKamus').value.toLowerCase().trim();
-            const res = document.getElementById('kamusResult');
-            if(!input) { res.innerHTML = "💡 Ketik kata di atas untuk memulai pencarian."; return; }
-            if(dictionary[input]) {
-                res.innerHTML = `Terjemahan: <b style="color:var(--accent);">${dictionary[input]}</b>`;
-            } else {
-                res.innerHTML = "❌ Kata belum ditemukan di kamus mini.";
-            }
-        }
-
-        // GAME MINI LOGIC
-        function cekJawaban() {
-            const val = parseInt(document.getElementById('jawabGame').value);
-            const res = document.getElementById('gameResult');
-            if(val === 8) {
-                res.style.color = "green";
-                res.textContent = "🎉 Hebat! Jawabanmu Benar!";
-            } else {
-                res.style.color = "red";
-                res.textContent = "❌ Masih kurang tepat, coba lagi ya!";
-            }
-        }
-
-        // AUTHENTICATION ROUTING
+        // AUTHENTICATION LOGIC
         function loginWali(e) {
             e.preventDefault();
             const key = document.getElementById('selectMurid').value;
@@ -425,11 +423,9 @@
             const m = dbData.murid[key];
 
             if(m && String(m.pin) === String(pin)) {
-                // Simpan session & alihkan ke view jurnal anak
-                sessionStorage.setItem('activeChild', key);
-                alert("PIN Benar! Membuka Jurnal " + m.nama);
+                renderJurnalWali(key);
                 closeModal();
-                // Anda bisa mengarahkan atau membuka tampilan jurnal di sini
+                showView('viewWali');
             } else {
                 alert("PIN Rahasia Salah!");
             }
@@ -438,11 +434,119 @@
         function loginAdmin(e) {
             e.preventDefault();
             const pass = document.getElementById('passAdmin').value;
-            if(pass === "admin123") { // Sesuaikan kata sandi
-                window.location.href = "admin.html";
+            if (pass === "RubelLestari2026!") {
+                closeModal();
+                showView('viewAdmin');
+                document.getElementById('passAdmin').value = "";
             } else {
                 alert("Kata sandi Pengelola/Guru salah!");
             }
+        }
+
+        // RENDER JURNAL WALI
+        function renderJurnalWali(key) {
+            const m = dbData.murid[key];
+            document.getElementById('waliNama').textContent = m.nama;
+            document.getElementById('waliImpian').textContent = m.impian || '-';
+            document.getElementById('waliPesan').textContent = `"${m.pesan || 'Selamat belajar!'}"`;
+
+            const userPresensi = (dbData.presensi || []).filter(p => p.key === key).reverse();
+            const sesi = userPresensi.length;
+            const tarif = parseInt(m.tarif || 0);
+            const total = sesi * tarif;
+            const titipan = parseInt(m.titipan || 0);
+            const sisa = total - titipan;
+
+            document.getElementById('waliSesiCount').textContent = `Sesi Terjalani: ${sesi}`;
+            document.getElementById('waliTotal').textContent = `Rp ${total.toLocaleString('id-ID')}`;
+            document.getElementById('waliTitipan').textContent = `Rp ${titipan.toLocaleString('id-ID')}`;
+            document.getElementById('waliSisa').textContent = `Rp ${sisa.toLocaleString('id-ID')}`;
+
+            const list = document.getElementById('waliPresensiList');
+            list.innerHTML = '';
+            if(userPresensi.length === 0) {
+                list.innerHTML = '<p style="color:#888; font-size:13px;">Belum ada catatan presensi.</p>';
+            } else {
+                userPresensi.forEach(p => {
+                    const div = document.createElement('div');
+                    div.className = 'timeline-item';
+                    div.innerHTML = `
+                        <span class="badge-date">⏰ ${p.waktu}</span>
+                        <div style="font-weight:bold; font-size:13px;">${p.catatan}</div>
+                    `;
+                    list.appendChild(div);
+                });
+            }
+        }
+
+        // ADMIN TAB CONTROLLER
+        function switchAdminTab(tab) {
+            if(tab === 'absen') {
+                document.getElementById('tabAbsen').classList.add('active');
+                document.getElementById('tabMurid').classList.remove('active');
+                document.getElementById('adminTabAbsen').style.display = 'block';
+                document.getElementById('adminTabMurid').style.display = 'none';
+            } else {
+                document.getElementById('tabMurid').classList.add('active');
+                document.getElementById('tabAbsen').classList.remove('active');
+                document.getElementById('adminTabMurid').style.display = 'block';
+                document.getElementById('adminTabAbsen').style.display = 'none';
+            }
+        }
+
+        // ADMIN ACTIONS
+        async function simpanPresensiAdmin() {
+            const key = document.getElementById('admAbsenMurid').value;
+            const note = document.getElementById('admAbsenNote').value || "Hadir Sesi Belajar (Hadir Cepat)";
+            if(!key) { alert("Pilih nama murid!"); return; }
+
+            const now = new Date();
+            const waktuStr = now.toLocaleDateString('id-ID', {weekday:'short', day:'numeric', month:'short'}) + " - " + now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
+
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'absen', key: key, waktu: waktuStr, catatan: note })
+                });
+                alert("Presensi berhasil dicatat!");
+                await loadData();
+            } catch(e) {
+                alert("Gagal menyimpan presensi.");
+            }
+        }
+
+        async function tambahMuridAdmin() {
+            const nama = document.getElementById('addNama').value;
+            const pin = document.getElementById('addPin').value;
+            const tarif = document.getElementById('addTarif').value;
+            const impian = document.getElementById('addImpian').value;
+
+            if(!nama || !pin) { alert("Nama dan PIN wajib diisi!"); return; }
+
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'tambahMurid', nama: nama, pin: pin, tarif: tarif, impian: impian })
+                });
+                alert("Murid baru berhasil ditambahkan!");
+                await loadData();
+            } catch(e) {
+                alert("Gagal menambah murid.");
+            }
+        }
+
+        // KIDS ZONE LOGIC
+        const dictionary = { "kucing": "Cat 🐱", "buku": "Book 📖", "rumah": "House 🏠", "pensil": "Pencil ✏️" };
+        function cariKamus() {
+            const input = document.getElementById('searchKamus').value.toLowerCase().trim();
+            const res = document.getElementById('kamusResult');
+            if(!input) { res.innerHTML = "💡 Ketik kata di atas untuk memulai."; return; }
+            res.innerHTML = dictionary[input] ? `Terjemahan: <b style="color:var(--accent);">${dictionary[input]}</b>` : "❌ Kata belum ditemukan.";
+        }
+        function cekJawaban() {
+            const val = parseInt(document.getElementById('jawabGame').value);
+            const res = document.getElementById('gameResult');
+            res.innerHTML = (val === 8) ? "<span style='color:green;'>🎉 Benar sekali!</span>" : "<span style='color:red;'>❌ Coba lagi ya!</span>";
         }
     </script>
 </body>
