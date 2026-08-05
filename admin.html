@@ -9,19 +9,19 @@
         header { background: #1a365d; color: white; padding: 15px 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
         .btn-back { color: white; text-decoration: none; background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 4px; font-size: 14px; }
         
-        .card { background: white; padding: 25px; margin: 20px auto; border-radius: 8px; max-width: 500px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .card { background: white; padding: 25px; margin: 20px auto; border-radius: 8px; max-width: 550px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .form-group { margin-bottom: 15px; }
         label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
         input, select, textarea { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
-        button { background: #1a365d; color: white; border: none; padding: 10px 15px; width: 100%; border-radius: 4px; cursor: pointer; font-size: 15px; font-weight: bold; }
-        button:hover { background: #2a4365; }
+        .btn-main { background: #1a365d; color: white; border: none; padding: 12px; width: 100%; border-radius: 4px; cursor: pointer; font-size: 15px; font-weight: bold; margin-top: 10px; }
+        .btn-add { background: #28a745; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-bottom: 15px; width: 100%; }
         .alert-success { background: #d4edda; color: #155724; padding: 10px; border-radius: 4px; margin-bottom: 15px; display: none; text-align: center; }
     </style>
 </head>
 <body>
 
     <header>
-        <h2>🔐 Admin Panel - Kelola Data</h2>
+        <h2>🔐 Admin Panel - Kelola Data Murid</h2>
         <a href="index.html" class="btn-back">← Ke Laman Utama</a>
     </header>
 
@@ -32,89 +32,169 @@
             <label for="passInput">Password Admin:</label>
             <input type="password" id="passInput" placeholder="Masukkan Password Admin...">
         </div>
-        <button onclick="login()">Masuk Panel</button>
+        <button class="btn-main" onclick="login()">Masuk Panel</button>
     </div>
 
     <!-- Dashboard Input Data oleh Tutor -->
-    <div class="card" id="adminContent" style="display: none; max-width: 600px;">
+    <div class="card" id="adminContent" style="display: none;">
         <h3>📝 Input & Update Laporan Murid</h3>
-        <div id="successMsg" class="alert-success">✅ Data berhasil diperbarui!</div>
+        <div id="successMsg" class="alert-success">✅ Data murid berhasil disimpan!</div>
+
+        <button class="btn-add" onclick="tambahMuridBaru()">➕ Tambah Murid Baru</button>
 
         <div class="form-group">
-            <label>Pilih Anak:</label>
-            <select id="selectAnak">
-                <option value="hana">hana (SD)</option>
-            </select>
+            <label>Pilih Murid yang Ingin Di-edit:</label>
+            <select id="selectAnak" onchange="muatDataSiswaSelected()"></select>
+        </div>
+
+        <div class="form-group">
+            <label>Nama Lengkap / Panggilan & Kelas:</label>
+            <input type="text" id="namaAnak" placeholder="misal: hana (SD)">
+        </div>
+
+        <div class="form-group">
+            <label>PIN Rahasia Wali Murid (4 Digit):</label>
+            <input type="text" id="pinAnak" maxlength="4" placeholder="misal: 1234">
         </div>
 
         <div class="form-group">
             <label>Impian Anak:</label>
-            <input type="text" id="impianAnak" value="dokter">
+            <input type="text" id="impianAnak" placeholder="misal: Dokter">
         </div>
 
         <div class="form-group">
-            <label>Jumlah Sesi Belajar (misal: 1 SESI):</label>
-            <input type="text" id="jumlahSesi" value="1 SESI">
+            <label>Jumlah Sesi Belajar:</label>
+            <input type="text" id="jumlahSesi" placeholder="misal: 1 SESI">
+        </div>
+
+        <div class="form-group">
+            <label>Link Foto Suasana Belajar (URL Gambar):</label>
+            <input type="text" id="fotoAnak" placeholder="https://... (Kosongkan jika belum ada)">
         </div>
 
         <div class="form-group">
             <label>Total Iuran (Rp):</label>
-            <input type="number" id="totalIuran" value="3000">
+            <input type="number" id="totalIuran" placeholder="3000">
         </div>
 
         <div class="form-group">
             <label>Titipan Diterima (Rp):</label>
-            <input type="number" id="titipanDiterima" value="0">
+            <input type="number" id="titipanDiterima" placeholder="0">
         </div>
 
         <div class="form-group">
             <label>Pesan Penyejuk / Catatan Tutor Hari Ini:</label>
-            <textarea id="pesanTutor" rows="3">Setiap anak memiliki kecepatan belajarnya masing-masing. Menemani mereka dengan sabar adalah kunci utama.</textarea>
+            <textarea id="pesanTutor" rows="3" placeholder="Tulis catatan perkembangan anak..."></textarea>
         </div>
 
-        <button onclick="simpanData()">💾 Simpan & Update Laporan</button>
+        <button class="btn-main" onclick="simpanData()">💾 Simpan / Update Data Murid</button>
     </div>
 
     <script>
+        // Data awal default jika belum ada data di browser
+        const defaultData = {
+            "hana": {
+                nama: "hana (SD)",
+                pin: "1234",
+                impian: "dokter",
+                sesi: "1 SESI",
+                foto: "",
+                totalIuran: 3000,
+                titipan: 0,
+                pesan: "Setiap anak memiliki kecepatan belajarnya masing-masing. Menemani mereka dengan sabar adalah kunci utama."
+            }
+        };
+
+        function getDatabase() {
+            const saved = localStorage.getItem('rubel_db');
+            return saved ? JSON.parse(saved) : defaultData;
+        }
+
         function login() {
             const pass = document.getElementById('passInput').value;
             if (pass === "RubelLestari2026!") {
                 document.getElementById('loginCard').style.display = 'none';
                 document.getElementById('adminContent').style.display = 'block';
-                muatDataTerimpan();
+                refreshDropdown();
             } else {
                 alert("Password Salah!");
             }
         }
 
+        function refreshDropdown() {
+            const db = getDatabase();
+            const select = document.getElementById('selectAnak');
+            select.innerHTML = '';
+            
+            for (let key in db) {
+                let opt = document.createElement('option');
+                opt.value = key;
+                opt.innerText = db[key].nama;
+                select.appendChild(opt);
+            }
+            muatDataSiswaSelected();
+        }
+
+        function muatDataSiswaSelected() {
+            const db = getDatabase();
+            const key = document.getElementById('selectAnak').value;
+            if (db[key]) {
+                document.getElementById('namaAnak').value = db[key].nama;
+                document.getElementById('pinAnak').value = db[key].pin;
+                document.getElementById('impianAnak').value = db[key].impian;
+                document.getElementById('jumlahSesi').value = db[key].sesi;
+                document.getElementById('fotoAnak').value = db[key].foto || '';
+                document.getElementById('totalIuran').value = db[key].totalIuran;
+                document.getElementById('titipanDiterima').value = db[key].titipan;
+                document.getElementById('pesanTutor').value = db[key].pesan;
+            }
+        }
+
+        function tambahMuridBaru() {
+            const namaBaru = prompt("Masukkan Nama Murid Baru (misal: Budi (SMP)):");
+            if (namaBaru) {
+                const key = namaBaru.toLowerCase().replace(/[^a-z0-9]/g, '');
+                const db = getDatabase();
+                db[key] = {
+                    nama: namaBaru,
+                    pin: "1234",
+                    impian: "Cita-cita",
+                    sesi: "0 SESI",
+                    foto: "",
+                    totalIuran: 0,
+                    titipan: 0,
+                    pesan: "Selamat bergabung di Rubel Lestari!"
+                };
+                localStorage.setItem('rubel_db', JSON.stringify(db));
+                refreshDropdown();
+                document.getElementById('selectAnak').value = key;
+                muatDataSiswaSelected();
+            }
+        }
+
         function simpanData() {
-            const dataHana = {
+            const key = document.getElementById('selectAnak').value;
+            if (!key) return;
+
+            const db = getDatabase();
+            db[key] = {
+                nama: document.getElementById('namaAnak').value,
+                pin: document.getElementById('pinAnak').value,
                 impian: document.getElementById('impianAnak').value,
                 sesi: document.getElementById('jumlahSesi').value,
+                foto: document.getElementById('fotoAnak').value,
                 totalIuran: document.getElementById('totalIuran').value,
                 titipan: document.getElementById('titipanDiterima').value,
                 pesan: document.getElementById('pesanTutor').value
             };
 
-            // Simpan ke memori browser
-            localStorage.setItem('data_hana', JSON.stringify(dataHana));
+            localStorage.setItem('rubel_db', JSON.stringify(db));
 
-            // Tampilkan notifikasi sukses
             const msg = document.getElementById('successMsg');
             msg.style.display = 'block';
             setTimeout(() => msg.style.display = 'none', 3000);
-        }
-
-        function muatDataTerimpan() {
-            const dataSaved = localStorage.getItem('data_hana');
-            if (dataSaved) {
-                const data = JSON.parse(dataSaved);
-                document.getElementById('impianAnak').value = data.impian;
-                document.getElementById('jumlahSesi').value = data.sesi;
-                document.getElementById('totalIuran').value = data.totalIuran;
-                document.getElementById('titipanDiterima').value = data.titipan;
-                document.getElementById('pesanTutor').value = data.pesan;
-            }
+            refreshDropdown();
+            document.getElementById('selectAnak').value = key;
         }
     </script>
 
