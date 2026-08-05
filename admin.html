@@ -8,40 +8,112 @@
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background-color: #eef2f5; color: #333; }
         header { background: #1a365d; color: white; padding: 15px 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
         .btn-back { color: white; text-decoration: none; background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 4px; font-size: 14px; }
-        .card { background: white; padding: 25px; margin-top: 20px; border-radius: 8px; max-width: 400px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        input { width: 100%; padding: 10px; margin: 10px 0 15px 0; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-        button { background: #1a365d; color: white; border: none; padding: 10px 15px; width: 100%; border-radius: 4px; cursor: pointer; font-size: 15px; }
+        
+        .card { background: white; padding: 25px; margin: 20px auto; border-radius: 8px; max-width: 500px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
+        input, select, textarea { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        button { background: #1a365d; color: white; border: none; padding: 10px 15px; width: 100%; border-radius: 4px; cursor: pointer; font-size: 15px; font-weight: bold; }
         button:hover { background: #2a4365; }
+        .alert-success { background: #d4edda; color: #155724; padding: 10px; border-radius: 4px; margin-bottom: 15px; display: none; text-align: center; }
     </style>
 </head>
 <body>
 
     <header>
-        <h2>🔐 Admin Panel</h2>
-        <a href="index.html" class="btn-back">← Kembali ke Utama</a>
+        <h2>🔐 Admin Panel - Kelola Data</h2>
+        <a href="index.html" class="btn-back">← Ke Laman Utama</a>
     </header>
 
+    <!-- Form Login Admin -->
     <div class="card" id="loginCard">
         <h3>Login Pengelola / Tutor</h3>
-        <label for="passInput">Masukkan Password Admin:</label>
-        <input type="password" id="passInput" placeholder="Password Admin...">
+        <div class="form-group">
+            <label for="passInput">Password Admin:</label>
+            <input type="password" id="passInput" placeholder="Masukkan Password Admin...">
+        </div>
         <button onclick="login()">Masuk Panel</button>
     </div>
 
-    <div class="card" id="adminContent" style="display: none; max-width: 100%;">
-        <h3>Selamat Datang, Tutor / Pengelola!</h3>
-        <p>Di sini tempat khusus mengelola iuran, catatan siswa, dan data absensi.</p>
+    <!-- Dashboard Input Data oleh Tutor -->
+    <div class="card" id="adminContent" style="display: none; max-width: 600px;">
+        <h3>📝 Input & Update Laporan Murid</h3>
+        <div id="successMsg" class="alert-success">✅ Data berhasil diperbarui!</div>
+
+        <div class="form-group">
+            <label>Pilih Anak:</label>
+            <select id="selectAnak">
+                <option value="hana">hana (SD)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Impian Anak:</label>
+            <input type="text" id="impianAnak" value="dokter">
+        </div>
+
+        <div class="form-group">
+            <label>Jumlah Sesi Belajar (misal: 1 SESI):</label>
+            <input type="text" id="jumlahSesi" value="1 SESI">
+        </div>
+
+        <div class="form-group">
+            <label>Total Iuran (Rp):</label>
+            <input type="number" id="totalIuran" value="3000">
+        </div>
+
+        <div class="form-group">
+            <label>Titipan Diterima (Rp):</label>
+            <input type="number" id="titipanDiterima" value="0">
+        </div>
+
+        <div class="form-group">
+            <label>Pesan Penyejuk / Catatan Tutor Hari Ini:</label>
+            <textarea id="pesanTutor" rows="3">Setiap anak memiliki kecepatan belajarnya masing-masing. Menemani mereka dengan sabar adalah kunci utama.</textarea>
+        </div>
+
+        <button onclick="simpanData()">💾 Simpan & Update Laporan</button>
     </div>
 
     <script>
         function login() {
             const pass = document.getElementById('passInput').value;
             if (pass === "RubelLestari2026!") {
-                alert("Login Berhasil!");
                 document.getElementById('loginCard').style.display = 'none';
                 document.getElementById('adminContent').style.display = 'block';
+                muatDataTerimpan();
             } else {
-                alert("Password Salah! Coba perhatikan huruf kapital dan tanda seru.");
+                alert("Password Salah!");
+            }
+        }
+
+        function simpanData() {
+            const dataHana = {
+                impian: document.getElementById('impianAnak').value,
+                sesi: document.getElementById('jumlahSesi').value,
+                totalIuran: document.getElementById('totalIuran').value,
+                titipan: document.getElementById('titipanDiterima').value,
+                pesan: document.getElementById('pesanTutor').value
+            };
+
+            // Simpan ke memori browser
+            localStorage.setItem('data_hana', JSON.stringify(dataHana));
+
+            // Tampilkan notifikasi sukses
+            const msg = document.getElementById('successMsg');
+            msg.style.display = 'block';
+            setTimeout(() => msg.style.display = 'none', 3000);
+        }
+
+        function muatDataTerimpan() {
+            const dataSaved = localStorage.getItem('data_hana');
+            if (dataSaved) {
+                const data = JSON.parse(dataSaved);
+                document.getElementById('impianAnak').value = data.impian;
+                document.getElementById('jumlahSesi').value = data.sesi;
+                document.getElementById('totalIuran').value = data.totalIuran;
+                document.getElementById('titipanDiterima').value = data.titipan;
+                document.getElementById('pesanTutor').value = data.pesan;
             }
         }
     </script>
