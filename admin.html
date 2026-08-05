@@ -9,14 +9,27 @@
         header { background: #1a365d; color: white; padding: 15px 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
         .btn-back { color: white; text-decoration: none; background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 4px; font-size: 14px; }
         
-        .card { background: white; padding: 25px; margin: 20px auto; border-radius: 8px; max-width: 550px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .container { max-width: 900px; margin: 20px auto; }
+        .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 25px; }
         .form-group { margin-bottom: 15px; }
         label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
         input, select, textarea { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        
         .btn-main { background: #1a365d; color: white; border: none; padding: 12px; width: 100%; border-radius: 4px; cursor: pointer; font-size: 15px; font-weight: bold; margin-top: 10px; }
-        .btn-add { background: #28a745; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-bottom: 15px; width: 100%; }
+        .btn-add { background: #28a745; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-bottom: 15px; width: 100%; font-size: 14px; }
+        .btn-danger { background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .btn-edit { background: #0d6efd; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        
         .alert-success { background: #d4edda; color: #155724; padding: 10px; border-radius: 4px; margin-bottom: 15px; display: none; text-align: center; }
         .loading-text { font-size: 13px; color: #0056b3; margin-top: 5px; display: none; }
+        
+        /* Tabel Rekapitulasi Guru */
+        .table-responsive { overflow-x: auto; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+        th, td { padding: 10px; border: 1px solid #ddd; }
+        th { background-color: #1a365d; color: white; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .preview-img { max-width: 100%; max-height: 150px; display: none; margin-top: 10px; border-radius: 6px; border: 1px solid #ddd; }
     </style>
 </head>
 <body>
@@ -26,70 +39,105 @@
         <a href="index.html" class="btn-back">← Ke Laman Utama</a>
     </header>
 
-    <!-- Form Login Admin -->
-    <div class="card" id="loginCard">
-        <h3>Login Pengelola / Tutor</h3>
-        <div class="form-group">
-            <label for="passInput">Password Admin:</label>
-            <input type="password" id="passInput" placeholder="Masukkan Password Admin...">
-        </div>
-        <button class="btn-main" onclick="login()">Masuk Panel</button>
-    </div>
-
-    <!-- Dashboard Input Data oleh Tutor -->
-    <div class="card" id="adminContent" style="display: none;">
-        <h3>📝 Input & Update Laporan Murid</h3>
-        <div id="successMsg" class="alert-success">✅ Data murid berhasil disimpan ke Cloud Google!</div>
-
-        <button class="btn-add" onclick="tambahMuridBaru()">➕ Tambah Murid Baru</button>
-
-        <div class="form-group">
-            <label>Pilih Murid yang Ingin Di-edit:</label>
-            <select id="selectAnak" onchange="muatDataSiswaSelected()"></select>
-            <div id="statusLoading" class="loading-text">🔄 Mengambil data terbaru dari Google Sheets...</div>
+    <div class="container">
+        <!-- Form Login Admin -->
+        <div class="card" id="loginCard" style="max-width: 450px; margin: 40px auto;">
+            <h3>Login Pengelola / Tutor</h3>
+            <div class="form-group">
+                <label for="passInput">Password Admin:</label>
+                <input type="password" id="passInput" placeholder="Masukkan Password Admin...">
+            </div>
+            <button class="btn-main" onclick="login()">Masuk Panel</button>
         </div>
 
-        <div class="form-group">
-            <label>Nama Lengkap / Panggilan & Kelas:</label>
-            <input type="text" id="namaAnak" placeholder="misal: hana (SD)">
-        </div>
+        <!-- Dashboard Utama Tutor -->
+        <div id="adminContent" style="display: none;">
+            
+            <!-- CARD 1: FORM INPUT & EDIT -->
+            <div class="card">
+                <h3>📝 Input & Update Laporan Murid</h3>
+                <div id="successMsg" class="alert-success">✅ Data murid berhasil disimpan ke Cloud!</div>
 
-        <div class="form-group">
-            <label>PIN Rahasia Wali Murid (4 Digit):</label>
-            <input type="text" id="pinAnak" maxlength="4" placeholder="misal: 1234">
-        </div>
+                <button class="btn-add" onclick="tambahMuridBaru()">➕ Tambah Murid Baru</button>
 
-        <div class="form-group">
-            <label>Impian Anak:</label>
-            <input type="text" id="impianAnak" placeholder="misal: Dokter">
-        </div>
+                <div class="form-group">
+                    <label>Pilih Murid yang Ingin Di-edit:</label>
+                    <select id="selectAnak" onchange="muatDataSiswaSelected()"></select>
+                    <div id="statusLoading" class="loading-text">🔄 Mengambil data terbaru dari server...</div>
+                </div>
 
-        <div class="form-group">
-            <label>Jumlah Sesi Belajar:</label>
-            <input type="text" id="jumlahSesi" placeholder="misal: 1 SESI">
-        </div>
+                <div class="form-group">
+                    <label>Nama Lengkap / Panggilan & Kelas:</label>
+                    <input type="text" id="namaAnak" placeholder="misal: hana (SD)">
+                </div>
 
-        <div class="form-group">
-            <label>Link Foto Suasana Belajar (URL Gambar):</label>
-            <input type="text" id="fotoAnak" placeholder="https://... (Kosongkan jika belum ada)">
-        </div>
+                <div class="form-group">
+                    <label>PIN Rahasia Wali Murid (4 Digit):</label>
+                    <input type="text" id="pinAnak" maxlength="4" placeholder="misal: 1234">
+                </div>
 
-        <div class="form-group">
-            <label>Total Iuran (Rp):</label>
-            <input type="number" id="totalIuran" placeholder="3000">
-        </div>
+                <div class="form-group">
+                    <label>Impian Anak:</label>
+                    <input type="text" id="impianAnak" placeholder="misal: Dokter">
+                </div>
 
-        <div class="form-group">
-            <label>Titipan Diterima (Rp):</label>
-            <input type="number" id="titipanDiterima" placeholder="0">
-        </div>
+                <div class="form-group">
+                    <label>Jumlah Sesi Belajar:</label>
+                    <input type="text" id="jumlahSesi" placeholder="misal: 1 SESI">
+                </div>
 
-        <div class="form-group">
-            <label>Pesan Penyejuk / Catatan Tutor Hari Ini:</label>
-            <textarea id="pesanTutor" rows="3" placeholder="Tulis catatan perkembangan anak..."></textarea>
-        </div>
+                <!-- UPLOAD FOTO LANGSUNG / KAMERA HP -->
+                <div class="form-group" style="background: #eef6ff; padding: 12px; border-radius: 6px; border: 1px dashed #0d6efd;">
+                    <label style="color: #0d6efd;">📸 Upload Foto Kegiatan Belajar (Dari Galeri / Kamera HP):</label>
+                    <input type="file" id="inputFotoFile" accept="image/*" onchange="prosesFoto(event)">
+                    <input type="hidden" id="fotoAnakBase64">
+                    <img id="previewFoto" class="preview-img" alt="Preview Foto">
+                </div>
 
-        <button class="btn-main" id="btnSimpan" onclick="simpanData()">💾 Simpan / Update Data Murid</button>
+                <div class="form-group">
+                    <label>Total Iuran (Rp):</label>
+                    <input type="number" id="totalIuran" placeholder="3000">
+                </div>
+
+                <div class="form-group">
+                    <label>Titipan Diterima (Rp):</label>
+                    <input type="number" id="titipanDiterima" placeholder="0">
+                </div>
+
+                <div class="form-group">
+                    <label>Pesan Penyejuk / Catatan Tutor Hari Ini:</label>
+                    <textarea id="pesanTutor" rows="3" placeholder="Tulis catatan perkembangan anak..."></textarea>
+                </div>
+
+                <button class="btn-main" id="btnSimpan" onclick="simpanData()">💾 Simpan / Update Data Murid</button>
+            </div>
+
+            <!-- CARD 2: REKAPITULASI SELURUH MURID -->
+            <div class="card">
+                <h3>📊 Rekapitulasi Data Seluruh Murid</h3>
+                <p style="font-size: 13px; color: #666;">Tabel ringkasan menyeluruh untuk mempermudah guru mengecek seluruh status murid tanpa perlu membuka spreadsheet.</p>
+                
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nama Murid</th>
+                                <th>PIN</th>
+                                <th>Sesi</th>
+                                <th>Total Iuran</th>
+                                <th>Titipan</th>
+                                <th>Sisa Catatan</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelRekapBody">
+                            <tr><td colspan="7" style="text-align: center;">Memuat data rekapitulasi...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
     </div>
 
     <script>
@@ -113,8 +161,9 @@
                 const res = await fetch(API_URL);
                 globalDb = await res.json();
                 refreshDropdown();
+                renderTabelRekap();
             } catch (e) {
-                alert("Gagal mengambil data dari Google Sheets! Memakai data lokal.");
+                alert("Gagal mengambil data dari server!");
             } finally {
                 document.getElementById('statusLoading').style.display = 'none';
             }
@@ -140,10 +189,112 @@
                 document.getElementById('pinAnak').value = globalDb[key].pin || '';
                 document.getElementById('impianAnak').value = globalDb[key].impian || '';
                 document.getElementById('jumlahSesi').value = globalDb[key].sesi || '';
-                document.getElementById('fotoAnak').value = globalDb[key].foto || '';
+                
+                const fotoVal = globalDb[key].foto || '';
+                document.getElementById('fotoAnakBase64').value = fotoVal;
+                const imgPreview = document.getElementById('previewFoto');
+                if (fotoVal) {
+                    imgPreview.src = fotoVal;
+                    imgPreview.style.display = 'block';
+                } else {
+                    imgPreview.style.display = 'none';
+                }
+
                 document.getElementById('totalIuran').value = globalDb[key].totalIuran || 0;
                 document.getElementById('titipanDiterima').value = globalDb[key].titipan || 0;
                 document.getElementById('pesanTutor').value = globalDb[key].pesan || '';
+            }
+        }
+
+        // Kompresi Foto Otomatis dari Kamera/Galeri HP
+        function prosesFoto(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    const maxDim = 500; // Kompresi ukuran gambar
+                    if (width > height) {
+                        if (width > maxDim) { height *= maxDim / width; width = maxDim; }
+                    } else {
+                        if (height > maxDim) { width *= maxDim / height; height = maxDim; }
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
+                    
+                    document.getElementById('fotoAnakBase64').value = compressedBase64;
+                    const imgPreview = document.getElementById('previewFoto');
+                    imgPreview.src = compressedBase64;
+                    imgPreview.style.display = 'block';
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function renderTabelRekap() {
+            const tbody = document.getElementById('tabelRekapBody');
+            tbody.innerHTML = '';
+
+            if (Object.keys(globalDb).length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Belum ada data murid.</td></tr>';
+                return;
+            }
+
+            for (let key in globalDb) {
+                const item = globalDb[key];
+                const total = Number(item.totalIuran || 0);
+                const titipan = Number(item.titipan || 0);
+                const sisa = total - titipan;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${item.nama}</strong></td>
+                    <td><code>${item.pin}</code></td>
+                    <td>${item.sesi}</td>
+                    <td>Rp ${total.toLocaleString('id-ID')}</td>
+                    <td>Rp ${titipan.toLocaleString('id-ID')}</td>
+                    <td style="color: ${sisa > 0 ? '#d9534f' : '#28a745'}; font-weight: bold;">Rp ${sisa.toLocaleString('id-ID')}</td>
+                    <td>
+                        <button class="btn-edit" onclick="pilihEdit('${key}')">✏️ Edit</button>
+                        <button class="btn-danger" onclick="hapusMurid('${key}', '${item.nama}')">🗑️ Hapus</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            }
+        }
+
+        function pilihEdit(key) {
+            document.getElementById('selectAnak').value = key;
+            muatDataSiswaSelected();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function hapusMurid(key, nama) {
+            if (confirm(`Apakah Anda yakin ingin menghapus data murid "${nama}"?`)) {
+                delete globalDb[key];
+                refreshDropdown();
+                renderTabelRekap();
+
+                try {
+                    await fetch(API_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: "delete", key: key })
+                    });
+                    alert(`Data ${nama} berhasil dihapus!`);
+                } catch (e) {
+                    alert("Gagal menghapus dari server!");
+                }
             }
         }
 
@@ -167,6 +318,7 @@
                 refreshDropdown();
                 document.getElementById('selectAnak').value = key;
                 muatDataSiswaSelected();
+                renderTabelRekap();
                 await kirimKeCloud(payload);
             }
         }
@@ -176,7 +328,7 @@
             if (!key) return;
 
             const btn = document.getElementById('btnSimpan');
-            btn.innerText = "⏳ Menyimpan ke Google Sheets...";
+            btn.innerText = "⏳ Menyimpan data...";
             btn.disabled = true;
 
             const payload = {
@@ -185,7 +337,7 @@
                 pin: document.getElementById('pinAnak').value,
                 impian: document.getElementById('impianAnak').value,
                 sesi: document.getElementById('jumlahSesi').value,
-                foto: document.getElementById('fotoAnak').value,
+                foto: document.getElementById('fotoAnakBase64').value,
                 totalIuran: document.getElementById('totalIuran').value,
                 titipan: document.getElementById('titipanDiterima').value,
                 pesan: document.getElementById('pesanTutor').value
@@ -196,6 +348,8 @@
 
             btn.innerText = "💾 Simpan / Update Data Murid";
             btn.disabled = false;
+
+            renderTabelRekap();
 
             const msg = document.getElementById('successMsg');
             msg.style.display = 'block';
