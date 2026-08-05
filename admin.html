@@ -17,6 +17,7 @@
         .btn-fast { background: #2e7d32; padding: 8px 12px; width: 48%; display: inline-block; }
         .btn-photo { background: #0288d1; padding: 8px 12px; width: 48%; display: inline-block; float: right; }
         .btn-titip { background: #f57c00; padding: 6px 12px; font-size: 12px; border-radius: 6px; }
+        .btn-edit-sm { background: #6c757d; color: white; border: none; padding: 3px 8px; border-radius: 5px; font-size: 11px; cursor: pointer; margin-left: 5px; }
         .flex-row { display: flex; gap: 10px; margin-top: 10px; }
         .input-group { margin-bottom: 12px; }
         .input-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555; }
@@ -24,6 +25,10 @@
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; text-align: center; background: #fafafa; padding: 10px; border-radius: 8px; margin: 10px 0; }
         .stats-val { font-weight: bold; font-size: 14px; margin-top: 4px; }
         .sync-tag { font-size: 11px; color: #ffc107; font-weight: normal; }
+
+        /* Modal Popup Edit */
+        .modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center; padding:15px; box-sizing:border-box; }
+        .modal-content { background:white; padding:20px; border-radius:12px; width:100%; max-width:500px; max-height:90vh; overflow-y:auto; box-shadow:0 10px 25px rgba(0,0,0,0.2); }
     </style>
 </head>
 <body>
@@ -46,7 +51,7 @@
             <button onclick="location.reload()" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer;">🔄 Refresh</button>
         </div>
 
-        <!-- FORM TAMBAH MURID BARU (VERSI 1) -->
+        <!-- FORM TAMBAH MURID BARU -->
         <div class="card">
             <h4 style="margin-top:0; color: var(--primary);">➕ Tambah Murid Baru</h4>
             <div class="input-group">
@@ -69,11 +74,70 @@
             <button class="btn" onclick="tambahMuridBaru()">Simpan Data Murid</button>
         </div>
 
-        <!-- DAFTAR MURID & ABSENSI HARIAN (VERSI 1 FULL FEATURE) -->
+        <!-- DAFTAR MURID & ABSENSI HARIAN -->
         <h4 style="margin: 20px 0 10px 0;">📋 DAFTAR MURID & PRESENSI HARIAN</h4>
         <div id="muridListContainer">
             <p style="color:#888;">Memuat data murid...</p>
         </div>
+    </div>
+</div>
+
+<!-- JENDELA POPUP (MODAL) EDIT DATA MURID -->
+<div id="editModal" class="modal-overlay">
+    <div class="modal-content">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:10px;">
+            <h4 style="margin:0; color:var(--primary);">✏️ Edit Data Murid</h4>
+            <button onclick="closeEditModal()" style="background:none; border:none; font-size:20px; cursor:pointer;">✕</button>
+        </div>
+        
+        <input type="hidden" id="editKey">
+
+        <div class="input-group">
+            <label>Nama Lengkap Anak:</label>
+            <input type="text" id="editNama">
+        </div>
+        <div class="flex-row">
+            <div style="flex:1;">
+                <label style="font-size:12px; font-weight:bold;">Tingkat:</label>
+                <select id="editTingkat">
+                    <option value="SD">SD</option>
+                    <option value="SMP">SMP</option>
+                </select>
+            </div>
+            <div style="flex:1;">
+                <label style="font-size:12px; font-weight:bold;">Tarif / Hari (Rp):</label>
+                <input type="number" id="editTarif">
+            </div>
+        </div>
+        <div class="flex-row" style="margin-top:10px;">
+            <div style="flex:1;">
+                <label style="font-size:12px; font-weight:bold;">Nama Ortu:</label>
+                <input type="text" id="editOrtu">
+            </div>
+            <div style="flex:1;">
+                <label style="font-size:12px; font-weight:bold;">Cita-cita / Impian:</label>
+                <input type="text" id="editImpian">
+            </div>
+        </div>
+        <div class="flex-row" style="margin-top:10px;">
+            <div style="flex:1;">
+                <label style="font-size:12px; font-weight:bold;">PIN Rahasia (4 Angka):</label>
+                <input type="text" id="editPin" maxlength="4">
+            </div>
+            <div style="flex:1;">
+                <label style="font-size:12px; font-weight:bold;">Jumlah Sesi Masuk:</label>
+                <input type="number" id="editSesi">
+            </div>
+        </div>
+        <div class="input-group" style="margin-top:10px;">
+            <label>Total Titipan Uang Diterima (Rp):</label>
+            <input type="number" id="editTitipan">
+        </div>
+        <div class="input-group">
+            <label>Pesan Tutor untuk Wali Murid:</label>
+            <textarea id="editPesan" rows="2" placeholder="Pesan khusus untuk orang tua..."></textarea>
+        </div>
+        <button class="btn" onclick="simpanPerubahanMurid()" style="margin-top:10px;">💾 Simpan Perubahan</button>
     </div>
 </div>
 
@@ -126,6 +190,7 @@
                     <div>
                         <b style="font-size: 16px;">${m.nama}</b> 
                         <span class="badge ${m.tingkat === 'SMP' ? 'badge-smp' : ''}">${m.tingkat || 'SD'}</span>
+                        <button class="btn-edit-sm" onclick="openEditModal('${key}')">✏️ Edit</button>
                         <div style="font-size: 12px; color: #666; margin-top:2px;">Ortu: ${m.ortu || '-'} | Rp ${tarif.toLocaleString('id-ID')}/hari</div>
                     </div>
                     <div>
@@ -153,13 +218,63 @@
         }
     }
 
-    // RESPONSIVE INSTAN (OPTIMISTIC UI UPDATE)
+    // MODAL EDIT FUNCTIONS
+    function openEditModal(key) {
+        const m = dbData.murid[key];
+        if (!m) return;
+        document.getElementById('editKey').value = key;
+        document.getElementById('editNama').value = m.nama || '';
+        document.getElementById('editTingkat').value = m.tingkat || 'SD';
+        document.getElementById('editTarif').value = m.tarif || 0;
+        document.getElementById('editOrtu').value = m.ortu || '-';
+        document.getElementById('editImpian').value = m.impian || '';
+        document.getElementById('editPin').value = m.pin || '1234';
+        document.getElementById('editSesi').value = m.sesi || 0;
+        document.getElementById('editTitipan').value = m.titipan || 0;
+        document.getElementById('editPesan').value = m.pesan || '';
+        document.getElementById('editModal').style.display = 'flex';
+    }
+
+    function closeEditModal() {
+        document.getElementById('editModal').style.display = 'none';
+    }
+
+    async function simpanPerubahanMurid() {
+        const key = document.getElementById('editKey').value;
+        if (!key || !dbData.murid[key]) return;
+
+        const updatedMurid = {
+            ...dbData.murid[key],
+            nama: document.getElementById('editNama').value.trim(),
+            tingkat: document.getElementById('editTingkat').value,
+            tarif: parseInt(document.getElementById('editTarif').value || 0),
+            ortu: document.getElementById('editOrtu').value,
+            impian: document.getElementById('editImpian').value,
+            pin: document.getElementById('editPin').value,
+            sesi: parseInt(document.getElementById('editSesi').value || 0),
+            titipan: parseInt(document.getElementById('editTitipan').value || 0),
+            pesan: document.getElementById('editPesan').value
+        };
+
+        dbData.murid[key] = updatedMurid;
+        renderMuridCards(); // Tampilan langsung ter-update instan
+        closeEditModal();
+
+        await fetch(API_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'save_murid', key: key, ...updatedMurid })
+        });
+        alert("✅ Data murid berhasil diperbarui!");
+    }
+
+    // ABSENSI & TITIPAN INSTAN
     async function hadirCepat(key) {
         let m = dbData.murid[key];
         m.sesi = parseInt(m.sesi || 0) + 1;
-        renderMuridCards(); // Tampilan langsung berubah dalam 0.01 detik!
+        renderMuridCards();
 
-        // Simpan ke cloud secara background
         const now = new Date();
         const waktuStr = now.toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'short'}) + ' - ' + now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
         
@@ -176,7 +291,7 @@
 
         let m = dbData.murid[key];
         m.titipan = parseInt(m.titipan || 0) + val;
-        renderMuridCards(); // Tampilan langsung berubah tanpa reload
+        renderMuridCards();
 
         await fetch(API_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ action:'save_murid', key:key, ...m }) });
         alert(`✅ Pembayaran Rp ${val.toLocaleString('id-ID')} berhasil dicatat!`);
@@ -217,9 +332,8 @@
         };
 
         dbData.murid[key] = newMurid;
-        renderMuridCards(); // Tampil instan
+        renderMuridCards();
 
-        // Reset form
         document.getElementById('addNama').value = '';
         document.getElementById('addTarif').value = '';
         document.getElementById('addOrtu').value = '';
