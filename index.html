@@ -164,8 +164,9 @@
         .tab-btn.active { background: white; color: var(--text-dark); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
         /* TIMELINE WALI */
-        .timeline-item { border-left: 3px solid var(--accent); padding-left: 12px; margin-bottom: 12px; }
+        .timeline-item { border-left: 3px solid var(--accent); padding-left: 12px; margin-bottom: 16px; }
         .badge-date { background: #ecfdf5; color: var(--accent); padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; display: inline-block; margin-bottom: 4px; }
+        .img-presensi { width: 100%; max-height: 200px; object-fit: cover; border-radius: 10px; margin-top: 8px; border: 1px solid #e2e8f0; }
     </style>
 </head>
 <body>
@@ -287,6 +288,11 @@
                     <label>CATATAN AKTIVITAS / KETERANGAN</label>
                     <input type="text" id="admAbsenNote" class="form-control" placeholder="Contoh: Hadir Sesi Belajar (Hadir Cepat)">
                 </div>
+                <div class="form-group">
+                    <label><i class="fa-solid fa-camera"></i> UNGGAH FOTO KEGIATAN (KAMERA / PERANGKAT)</label>
+                    <input type="file" id="admAbsenFoto" accept="image/*" capture="environment" class="form-control" onchange="previewFoto(event)">
+                    <img id="imgPreview" style="display:none; width:100%; max-height:180px; object-fit:cover; margin-top:10px; border-radius:10px; border:1px solid #cbd5e1;">
+                </div>
                 <button class="btn-action" onclick="simpanPresensiAdmin()"><i class="fa-solid fa-plus"></i> Simpan Presensi</button>
             </div>
 
@@ -345,6 +351,7 @@
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbwapXkSgK1_hq4ZdgI4xiOMv7l7wMGvxmSbgsts-_TsZ3qKQVX8ca0NXejOWASU2aOB/exec";
         let dbData = { murid: {}, presensi: [] };
+        let currentFotoBase64 = "";
 
         window.onload = async function() {
             await loadData();
@@ -375,6 +382,35 @@
                 }
             } catch(e) {
                 console.log("Offline mode or load failed");
+            }
+        }
+
+        // PREVIEW FOTO & KOMPRESI BASE64
+        function previewFoto(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        // Kompres foto ke resolusi kecil (max width 600px) agar cepat di-upload
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        const maxWidth = 600;
+                        const scale = maxWidth / img.width;
+                        canvas.width = maxWidth;
+                        canvas.height = img.height * scale;
+
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        currentFotoBase64 = canvas.toDataURL('image/jpeg', 0.7); // Kompresi JPEG 70%
+
+                        const preview = document.getElementById('imgPreview');
+                        preview.src = currentFotoBase64;
+                        preview.style.display = 'block';
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
             }
         }
 
@@ -470,9 +506,13 @@
                 userPresensi.forEach(p => {
                     const div = document.createElement('div');
                     div.className = 'timeline-item';
+                    
+                    let htmlFoto = p.foto ? `<img src="${p.foto}" class="img-presensi" alt="Foto Kegiatan">` : '';
+                    
                     div.innerHTML = `
                         <span class="badge-date">⏰ ${p.waktu}</span>
                         <div style="font-weight:bold; font-size:13px;">${p.catatan}</div>
+                        ${htmlFoto}
                     `;
                     list.appendChild(div);
                 });
@@ -506,9 +546,22 @@
             try {
                 await fetch(API_URL, {
                     method: 'POST',
-                    body: JSON.stringify({ action: 'absen', key: key, waktu: waktuStr, catatan: note })
+                    body: JSON.stringify({ 
+                        action: 'absen', 
+                        key: key, 
+                        waktu: waktuStr, 
+                        catatan: note,
+                        foto: currentFotoBase64 
+                    })
                 });
                 alert("Presensi berhasil dicatat!");
+                
+                // Reset Form
+                document.getElementById('admAbsenNote').value = "";
+                document.getElementById('admAbsenFoto').value = "";
+                document.getElementById('imgPreview').style.display = "none";
+                currentFotoBase64 = "";
+
                 await loadData();
             } catch(e) {
                 alert("Gagal menyimpan presensi.");
