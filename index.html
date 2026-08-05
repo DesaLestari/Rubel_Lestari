@@ -8,19 +8,26 @@
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background-color: #f4f6f8; color: #333; }
         header { background: #0d5c3a; color: white; padding: 15px 20px; border-radius: 8px; }
         nav { margin-top: 15px; display: flex; gap: 8px; }
-        nav button { padding: 8px 16px; border: none; background: #148052; color: white; border-radius: 6px; cursor: pointer; font-weight: 500; transition: 0.2s; }
-        nav button:hover { background: #1a9e66; }
+        nav button { padding: 8px 16px; border: none; background: #148052; color: white; border-radius: 6px; cursor: pointer; font-weight: 500; }
         nav button.active { background: #ffffff; color: #0d5c3a; font-weight: bold; }
         
         .tab-content { display: none; background: white; padding: 25px; margin-top: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .tab-content.active { display: block; }
 
         input, select { width: 100%; max-width: 300px; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; display: block; }
-        .btn-submit { background: #0d5c3a; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
+        .btn-submit { background: #0d5c3a; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+
+        /* Style Kartu Laporan */
+        .report-card { border: 2px solid #0d5c3a; border-radius: 8px; margin-top: 20px; overflow: hidden; display: none; }
+        .report-header { background: #0d5c3a; color: white; padding: 15px; }
+        .report-body { padding: 20px; }
+        .box-salam { background: #fffbe6; border: 1px solid #ffe58f; padding: 15px; border-radius: 6px; margin-bottom: 15px; }
+        .grid-iuran { display: flex; gap: 10px; margin: 15px 0; }
+        .box-iuran { flex: 1; padding: 10px; border-radius: 6px; text-align: center; }
+        .box-penyejuk { background: #fffbe6; padding: 15px; border-radius: 6px; border-left: 4px solid #ffc107; margin-top: 15px; }
 
         footer { margin-top: 40px; text-align: center; color: #777; font-size: 14px; border-top: 1px solid #ddd; padding-top: 15px; }
         footer a { color: #888; text-decoration: none; font-size: 13px; }
-        footer a:hover { text-decoration: underline; color: #0d5c3a; }
     </style>
 </head>
 <body>
@@ -34,13 +41,11 @@
         </nav>
     </header>
 
-    <!-- Konten 1: Info & Profil -->
     <div id="tab-info" class="tab-content">
         <h3>Info & Profil Rumah Belajar</h3>
-        <p>Selamat datang di Rumah Belajar Lestari Friendship! Tempat belajar yang menyenangkan dan ramah anak.</p>
+        <p>Selamat datang di Rumah Belajar Lestari Friendship!</p>
     </div>
 
-    <!-- Konten 2: Wali Murid (Aktif secara default) -->
     <div id="tab-wali" class="tab-content active">
         <h3>PILIH NAMA ANAK BAPAK/IBU:</h3>
         <select id="namaAnak">
@@ -49,14 +54,50 @@
         </select>
 
         <h4>🔒 Masukkan PIN Rahasia 4-Digit Anak:</h4>
-        <input type="password" maxlength="4" placeholder="****">
-        <button class="btn-submit">Buka Laporan</button>
+        <input type="password" id="pinInput" maxlength="4" placeholder="****">
+        <button class="btn-submit" onclick="bukaLaporan()">Buka Laporan</button>
+
+        <!-- Kartu Laporan Hasil Update -->
+        <div id="laporanBox" class="report-card">
+            <div class="report-header">
+                <h3 style="margin:0;">Laporan Kebanggaan Bapak/Ibu <span id="outNama">hana</span></h3>
+                <small>Memantau Perkembangan: <span id="outNama2">hana</span></small>
+            </div>
+            <div class="report-body">
+                <div class="box-salam">
+                    🌱 <strong>SALAM HANGAT DARI TUTOR!</strong><br>
+                    Terima kasih Bapak/Ibu sudah mempercayakan <span id="outNama3">hana</span>.<br>
+                    <strong>Impian Anak:</strong> <span id="outImpian" style="color:#0d5c3a;">dokter</span>
+                </div>
+
+                <div>
+                    📸 <strong>RIWAYAT TANGGAL & FOTO SUASANA BELAJAR</strong> (<span id="outSesi">1 SESI</span>)
+                </div>
+
+                <h4 style="margin-top:20px;">CATATAN TRANSPARANSI IURAN</h4>
+                <div class="grid-iuran">
+                    <div class="box-iuran" style="background: #f5f5f5;">
+                        <small>Total Iuran</small><br><strong id="outTotal">Rp 3.000</strong>
+                    </div>
+                    <div class="box-iuran" style="background: #e6f7ff;">
+                        <small>Titipan Diterima</small><br><strong id="outTitipan" style="color:#1890ff;">Rp 0</strong>
+                    </div>
+                    <div class="box-iuran" style="background: #fff1f0;">
+                        <small>Sisa Catatan</small><br><strong id="outSisa" style="color:#f5222d;">Rp 3.000</strong>
+                    </div>
+                </div>
+
+                <div class="box-penyejuk">
+                    💡 <strong>PESAN PENYEJUK HARI INI</strong><br>
+                    <i id="outPesan">"Setiap anak memiliki kecepatan belajarnya masing-masing."</i>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Konten 3: Layar Anak -->
     <div id="tab-anak" class="tab-content">
         <h3>Layar Interaktif Anak</h3>
-        <p>Area khusus aktivitas interaktif dan materi siswa.</p>
+        <p>Area khusus aktivitas interaktif siswa.</p>
     </div>
 
     <footer>
@@ -66,14 +107,41 @@
 
     <script>
         function openTab(tabName) {
-            // Sembunyikan semua tab content
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            // Reset status tombol navigasi
             document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
-
-            // Tampilkan tab yang dipilih & aktifkan tombolnya
             document.getElementById('tab-' + tabName).classList.add('active');
             document.getElementById('btn-' + tabName).classList.add('active');
+        }
+
+        function bukaLaporan() {
+            const anak = document.getElementById('namaAnak').value;
+            const pin = document.getElementById('pinInput').value;
+
+            if (!anak) {
+                alert("Pilih nama anak terlebih dahulu!");
+                return;
+            }
+
+            // PIN Default untuk tes misal 1234
+            if (pin === "1234" || pin.length === 4) {
+                // Ambil data terbaru dari memori
+                const dataSaved = localStorage.getItem('data_hana');
+                if (dataSaved) {
+                    const data = JSON.parse(dataSaved);
+                    document.getElementById('outImpian').innerText = data.impian;
+                    document.getElementById('outSesi').innerText = data.sesi;
+                    document.getElementById('outTotal').innerText = 'Rp ' + Number(data.totalIuran).toLocaleString('id-ID');
+                    document.getElementById('outTitipan').innerText = 'Rp ' + Number(data.titipan).toLocaleString('id-ID');
+                    
+                    const sisa = Number(data.totalIuran) - Number(data.titipan);
+                    document.getElementById('outSisa').innerText = 'Rp ' + sisa.toLocaleString('id-ID');
+                    document.getElementById('outPesan').innerText = '"' + data.pesan + '"';
+                }
+
+                document.getElementById('laporanBox').style.display = 'block';
+            } else {
+                alert("PIN Salah! Masukkan 4 digit angka.");
+            }
         }
     </script>
 
