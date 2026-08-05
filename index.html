@@ -17,6 +17,11 @@
         input, select { width: 100%; max-width: 320px; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; display: block; }
         .btn-submit { background: #0d5c3a; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
 
+        /* Style Tab Profil */
+        .grid-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px; }
+        .card-info { background: #f8f9fa; border-left: 4px solid #0d5c3a; padding: 15px; border-radius: 6px; }
+
+        /* Style Tab Wali Murid */
         .report-card { border: 2px solid #0d5c3a; border-radius: 8px; margin-top: 20px; overflow: hidden; display: none; }
         .report-header { background: #0d5c3a; color: white; padding: 15px; }
         .report-body { padding: 20px; }
@@ -25,6 +30,10 @@
         .box-iuran { flex: 1; padding: 10px; border-radius: 6px; text-align: center; }
         .box-penyejuk { background: #fffbe6; padding: 15px; border-radius: 6px; border-left: 4px solid #ffc107; margin-top: 15px; }
         .img-kegiatan { width: 100%; max-height: 250px; object-fit: cover; border-radius: 6px; margin-top: 10px; display: none; }
+
+        /* Style Tab Layar Anak */
+        .game-box { background: #e6f7ff; border: 2px dashed #1890ff; padding: 20px; border-radius: 8px; text-align: center; margin-top: 15px; }
+        .star-box { font-size: 24px; margin: 10px 0; }
 
         footer { margin-top: 40px; text-align: center; color: #777; font-size: 14px; border-top: 1px solid #ddd; padding-top: 15px; }
         footer a { color: #888; text-decoration: none; font-size: 13px; }
@@ -41,11 +50,34 @@
         </nav>
     </header>
 
+    <!-- TAB 1: INFO & PROFIL -->
     <div id="tab-info" class="tab-content">
-        <h3>Info & Profil Rumah Belajar</h3>
-        <p>Selamat datang di Rumah Belajar Lestari Friendship!</p>
+        <h3>✨ Tentang Rumah Belajar Lestari Friendship</h3>
+        <p>Wadah belajar yang hangat, ramah anak, dan berfokus pada pembentukan karakter serta pendampingan akademik anak.</p>
+        
+        <div class="grid-info">
+            <div class="card-info">
+                <h4>📚 Program Belajar</h4>
+                <ul>
+                    <li>Bimbingan Baca, Tulis, Hitung (Calistung)</li>
+                    <li>Pendampingan PR & Materi Sekolah (SD & SMP)</li>
+                    <li>Kelas Karakter & Kreativitas Anak</li>
+                </ul>
+            </div>
+            <div class="card-info">
+                <h4>⏰ Jadwal Operasional</h4>
+                <p><strong>Senin - Jumat:</strong> 14.00 - 17.00 WIB</p>
+                <p><strong>Sabtu:</strong> Sesi Aktivitas Luar / Kreativitas</p>
+            </div>
+            <div class="card-info">
+                <h4>📞 Kontak & Informasi</h4>
+                <p><strong>WhatsApp Tutor:</strong> 0812-XXXX-XXXX</p>
+                <p><strong>Lokasi:</strong> Rumah Belajar Lestari, Lingkungan Friendship</p>
+            </div>
+        </div>
     </div>
 
+    <!-- TAB 2: WALI MURID -->
     <div id="tab-wali" class="tab-content active">
         <h3>PILIH NAMA ANAK BAPAK/IBU:</h3>
         <select id="namaAnak"></select>
@@ -54,7 +86,6 @@
         <input type="password" id="pinInput" maxlength="4" placeholder="****">
         <button class="btn-submit" onclick="bukaLaporan()">Buka Laporan</button>
 
-        <!-- Kartu Laporan -->
         <div id="laporanBox" class="report-card">
             <div class="report-header">
                 <h3 style="margin:0;">Laporan Kebanggaan Bapak/Ibu <span id="outNama"></span></h3>
@@ -93,9 +124,22 @@
         </div>
     </div>
 
+    <!-- TAB 3: LAYAR ANAK -->
     <div id="tab-anak" class="tab-content">
-        <h3>Layar Interaktif Anak</h3>
-        <p>Area khusus aktivitas interaktif siswa.</p>
+        <h3>🚀 Ruang Belajar & Bermain Anak</h3>
+        <p>Halo Adik-adik hebat! Yuk kumpulkan bintang prestasi dan jawab kuis seru hari ini!</p>
+
+        <div class="star-box">
+            ⭐ Koleksi Bintang Kamu: <strong id="starCount" style="color: #d4b106;">3</strong> Bintang!
+        </div>
+
+        <div class="game-box">
+            <h4>🎯 Kuis Matematika Seru</h4>
+            <p id="soalKuis">Berapakah 7 + 8 ?</p>
+            <input type="number" id="jawabanKuis" placeholder="Ketik jawabanmu..." style="margin: 0 auto 10px auto;">
+            <button class="btn-submit" onclick="cekJawaban()">Kirim Jawaban</button>
+            <p id="hasilKuis" style="font-weight: bold; margin-top: 10px;"></p>
+        </div>
     </div>
 
     <footer>
@@ -180,7 +224,21 @@
             }
         }
 
-        // Jalankan otomatis saat halaman dimuat
+        let bintang = 3;
+        function cekJawaban() {
+            const jawab = document.getElementById('jawabanKuis').value;
+            const hasil = document.getElementById('hasilKuis');
+            if (parseInt(jawab) === 15) {
+                bintang++;
+                document.getElementById('starCount').innerText = bintang;
+                hasil.style.color = 'green';
+                hasil.innerText = "🎉 Hore! Jawabanmu Benar (+1 Bintang)";
+            } else {
+                hasil.style.color = 'red';
+                hasil.innerText = "❌ Masih kurang tepat, coba hitung lagi ya!";
+            }
+        }
+
         loadDropdown();
     </script>
 
