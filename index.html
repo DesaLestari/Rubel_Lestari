@@ -17,11 +17,9 @@
         input, select { width: 100%; max-width: 320px; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; display: block; }
         .btn-submit { background: #0d5c3a; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
 
-        /* Style Tab Profil */
         .grid-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px; }
         .card-info { background: #f8f9fa; border-left: 4px solid #0d5c3a; padding: 15px; border-radius: 6px; }
 
-        /* Style Tab Wali Murid */
         .report-card { border: 2px solid #0d5c3a; border-radius: 8px; margin-top: 20px; overflow: hidden; display: none; }
         .report-header { background: #0d5c3a; color: white; padding: 15px; }
         .report-body { padding: 20px; }
@@ -31,7 +29,6 @@
         .box-penyejuk { background: #fffbe6; padding: 15px; border-radius: 6px; border-left: 4px solid #ffc107; margin-top: 15px; }
         .img-kegiatan { width: 100%; max-height: 250px; object-fit: cover; border-radius: 6px; margin-top: 10px; display: none; }
 
-        /* Style Tab Layar Anak */
         .game-box { background: #e6f7ff; border: 2px dashed #1890ff; padding: 20px; border-radius: 8px; text-align: center; margin-top: 15px; }
         .star-box { font-size: 24px; margin: 10px 0; }
 
@@ -50,7 +47,6 @@
         </nav>
     </header>
 
-    <!-- TAB 1: INFO & PROFIL -->
     <div id="tab-info" class="tab-content">
         <h3>✨ Tentang Rumah Belajar Lestari Friendship</h3>
         <p>Wadah belajar yang hangat, ramah anak, dan berfokus pada pembentukan karakter serta pendampingan akademik anak.</p>
@@ -77,10 +73,11 @@
         </div>
     </div>
 
-    <!-- TAB 2: WALI MURID -->
     <div id="tab-wali" class="tab-content active">
         <h3>PILIH NAMA ANAK BAPAK/IBU:</h3>
-        <select id="namaAnak"></select>
+        <select id="namaAnak">
+            <option value="">🔄 Mengambil data siswa dari server...</option>
+        </select>
 
         <h4>🔒 Masukkan PIN Rahasia 4-Digit Anak:</h4>
         <input type="password" id="pinInput" maxlength="4" placeholder="****">
@@ -124,7 +121,6 @@
         </div>
     </div>
 
-    <!-- TAB 3: LAYAR ANAK -->
     <div id="tab-anak" class="tab-content">
         <h3>🚀 Ruang Belajar & Bermain Anak</h3>
         <p>Halo Adik-adik hebat! Yuk kumpulkan bintang prestasi dan jawab kuis seru hari ini!</p>
@@ -148,32 +144,26 @@
     </footer>
 
     <script>
-        const defaultData = {
-            "hana": {
-                nama: "hana (SD)",
-                pin: "1234",
-                impian: "dokter",
-                sesi: "1 SESI",
-                foto: "",
-                totalIuran: 3000,
-                titipan: 0,
-                pesan: "Setiap anak memiliki kecepatan belajarnya masing-masing. Menemani mereka dengan sabar adalah kunci utama."
-            }
-        };
+        const API_URL = "https://script.google.com/macros/s/AKfycbw9LtHROoT28_YpJ_Fdm3FcoJi24dlfjhi0ENEc497wCtU2oSUEjRszVFEC4rS0Xm809A/exec";
+        let globalDb = {};
 
-        function getDatabase() {
-            const saved = localStorage.getItem('rubel_db');
-            return saved ? JSON.parse(saved) : defaultData;
+        async function fetchCloudData() {
+            try {
+                const res = await fetch(API_URL);
+                globalDb = await res.json();
+                loadDropdown();
+            } catch (e) {
+                console.error("Gagal membaca Google Sheets", e);
+            }
         }
 
         function loadDropdown() {
-            const db = getDatabase();
             const select = document.getElementById('namaAnak');
             select.innerHTML = '<option value="">-- Pilih Nama Anak --</option>';
-            for (let key in db) {
+            for (let key in globalDb) {
                 let opt = document.createElement('option');
                 opt.value = key;
-                opt.innerText = db[key].nama;
+                opt.innerText = globalDb[key].nama;
                 select.appendChild(opt);
             }
         }
@@ -194,21 +184,20 @@
                 return;
             }
 
-            const db = getDatabase();
-            const data = db[key];
+            const data = globalDb[key];
 
-            if (data && pin === data.pin) {
+            if (data && String(pin) === String(data.pin)) {
                 document.getElementById('outNama').innerText = data.nama;
                 document.getElementById('outNama2').innerText = data.nama;
                 document.getElementById('outNama3').innerText = data.nama;
                 document.getElementById('outImpian').innerText = data.impian;
                 document.getElementById('outSesi').innerText = data.sesi;
-                document.getElementById('outTotal').innerText = 'Rp ' + Number(data.totalIuran).toLocaleString('id-ID');
-                document.getElementById('outTitipan').innerText = 'Rp ' + Number(data.titipan).toLocaleString('id-ID');
+                document.getElementById('outTotal').innerText = 'Rp ' + Number(data.totalIuran || 0).toLocaleString('id-ID');
+                document.getElementById('outTitipan').innerText = 'Rp ' + Number(data.titipan || 0).toLocaleString('id-ID');
                 
-                const sisa = Number(data.totalIuran) - Number(data.titipan);
+                const sisa = Number(data.totalIuran || 0) - Number(data.titipan || 0);
                 document.getElementById('outSisa').innerText = 'Rp ' + sisa.toLocaleString('id-ID');
-                document.getElementById('outPesan').innerText = '"' + data.pesan + '"';
+                document.getElementById('outPesan').innerText = '"' + (data.pesan || '') + '"';
 
                 const img = document.getElementById('outFoto');
                 if (data.foto) {
@@ -239,7 +228,7 @@
             }
         }
 
-        loadDropdown();
+        fetchCloudData();
     </script>
 
 </body>
