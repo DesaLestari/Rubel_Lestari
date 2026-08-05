@@ -16,6 +16,7 @@
         .btn-main { background: #1a365d; color: white; border: none; padding: 12px; width: 100%; border-radius: 4px; cursor: pointer; font-size: 15px; font-weight: bold; margin-top: 10px; }
         .btn-add { background: #28a745; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-bottom: 15px; width: 100%; }
         .alert-success { background: #d4edda; color: #155724; padding: 10px; border-radius: 4px; margin-bottom: 15px; display: none; text-align: center; }
+        .loading-text { font-size: 13px; color: #0056b3; margin-top: 5px; display: none; }
     </style>
 </head>
 <body>
@@ -38,13 +39,14 @@
     <!-- Dashboard Input Data oleh Tutor -->
     <div class="card" id="adminContent" style="display: none;">
         <h3>📝 Input & Update Laporan Murid</h3>
-        <div id="successMsg" class="alert-success">✅ Data murid berhasil disimpan!</div>
+        <div id="successMsg" class="alert-success">✅ Data murid berhasil disimpan ke Cloud Google!</div>
 
         <button class="btn-add" onclick="tambahMuridBaru()">➕ Tambah Murid Baru</button>
 
         <div class="form-group">
             <label>Pilih Murid yang Ingin Di-edit:</label>
             <select id="selectAnak" onchange="muatDataSiswaSelected()"></select>
+            <div id="statusLoading" class="loading-text">🔄 Mengambil data terbaru dari Google Sheets...</div>
         </div>
 
         <div class="form-group">
@@ -87,75 +89,70 @@
             <textarea id="pesanTutor" rows="3" placeholder="Tulis catatan perkembangan anak..."></textarea>
         </div>
 
-        <button class="btn-main" onclick="simpanData()">💾 Simpan / Update Data Murid</button>
+        <button class="btn-main" id="btnSimpan" onclick="simpanData()">💾 Simpan / Update Data Murid</button>
     </div>
 
     <script>
-        // Data awal default jika belum ada data di browser
-        const defaultData = {
-            "hana": {
-                nama: "hana (SD)",
-                pin: "1234",
-                impian: "dokter",
-                sesi: "1 SESI",
-                foto: "",
-                totalIuran: 3000,
-                titipan: 0,
-                pesan: "Setiap anak memiliki kecepatan belajarnya masing-masing. Menemani mereka dengan sabar adalah kunci utama."
-            }
-        };
-
-        function getDatabase() {
-            const saved = localStorage.getItem('rubel_db');
-            return saved ? JSON.parse(saved) : defaultData;
-        }
+        const API_URL = "https://script.google.com/macros/s/AKfycbw9LtHROoT28_YpJ_Fdm3FcoJi24dlfjhi0ENEc497wCtU2oSUEjRszVFEC4rS0Xm809A/exec";
+        let globalDb = {};
 
         function login() {
             const pass = document.getElementById('passInput').value;
             if (pass === "RubelLestari2026!") {
                 document.getElementById('loginCard').style.display = 'none';
                 document.getElementById('adminContent').style.display = 'block';
-                refreshDropdown();
+                loadFromCloud();
             } else {
                 alert("Password Salah!");
             }
         }
 
+        async function loadFromCloud() {
+            document.getElementById('statusLoading').style.display = 'block';
+            try {
+                const res = await fetch(API_URL);
+                globalDb = await res.json();
+                refreshDropdown();
+            } catch (e) {
+                alert("Gagal mengambil data dari Google Sheets! Memakai data lokal.");
+            } finally {
+                document.getElementById('statusLoading').style.display = 'none';
+            }
+        }
+
         function refreshDropdown() {
-            const db = getDatabase();
             const select = document.getElementById('selectAnak');
             select.innerHTML = '';
             
-            for (let key in db) {
+            for (let key in globalDb) {
                 let opt = document.createElement('option');
                 opt.value = key;
-                opt.innerText = db[key].nama;
+                opt.innerText = globalDb[key].nama;
                 select.appendChild(opt);
             }
             muatDataSiswaSelected();
         }
 
         function muatDataSiswaSelected() {
-            const db = getDatabase();
             const key = document.getElementById('selectAnak').value;
-            if (db[key]) {
-                document.getElementById('namaAnak').value = db[key].nama;
-                document.getElementById('pinAnak').value = db[key].pin;
-                document.getElementById('impianAnak').value = db[key].impian;
-                document.getElementById('jumlahSesi').value = db[key].sesi;
-                document.getElementById('fotoAnak').value = db[key].foto || '';
-                document.getElementById('totalIuran').value = db[key].totalIuran;
-                document.getElementById('titipanDiterima').value = db[key].titipan;
-                document.getElementById('pesanTutor').value = db[key].pesan;
+            if (globalDb[key]) {
+                document.getElementById('namaAnak').value = globalDb[key].nama || '';
+                document.getElementById('pinAnak').value = globalDb[key].pin || '';
+                document.getElementById('impianAnak').value = globalDb[key].impian || '';
+                document.getElementById('jumlahSesi').value = globalDb[key].sesi || '';
+                document.getElementById('fotoAnak').value = globalDb[key].foto || '';
+                document.getElementById('totalIuran').value = globalDb[key].totalIuran || 0;
+                document.getElementById('titipanDiterima').value = globalDb[key].titipan || 0;
+                document.getElementById('pesanTutor').value = globalDb[key].pesan || '';
             }
         }
 
-        function tambahMuridBaru() {
+        async function tambahMuridBaru() {
             const namaBaru = prompt("Masukkan Nama Murid Baru (misal: Budi (SMP)):");
             if (namaBaru) {
                 const key = namaBaru.toLowerCase().replace(/[^a-z0-9]/g, '');
-                const db = getDatabase();
-                db[key] = {
+                const payload = {
+                    key: key,
                     nama: namaBaru,
                     pin: "1234",
                     impian: "Cita-cita",
@@ -165,19 +162,25 @@
                     titipan: 0,
                     pesan: "Selamat bergabung di Rubel Lestari!"
                 };
-                localStorage.setItem('rubel_db', JSON.stringify(db));
+
+                globalDb[key] = payload;
                 refreshDropdown();
                 document.getElementById('selectAnak').value = key;
                 muatDataSiswaSelected();
+                await kirimKeCloud(payload);
             }
         }
 
-        function simpanData() {
+        async function simpanData() {
             const key = document.getElementById('selectAnak').value;
             if (!key) return;
 
-            const db = getDatabase();
-            db[key] = {
+            const btn = document.getElementById('btnSimpan');
+            btn.innerText = "⏳ Menyimpan ke Google Sheets...";
+            btn.disabled = true;
+
+            const payload = {
+                key: key,
                 nama: document.getElementById('namaAnak').value,
                 pin: document.getElementById('pinAnak').value,
                 impian: document.getElementById('impianAnak').value,
@@ -188,13 +191,28 @@
                 pesan: document.getElementById('pesanTutor').value
             };
 
-            localStorage.setItem('rubel_db', JSON.stringify(db));
+            globalDb[key] = payload;
+            await kirimKeCloud(payload);
+
+            btn.innerText = "💾 Simpan / Update Data Murid";
+            btn.disabled = false;
 
             const msg = document.getElementById('successMsg');
             msg.style.display = 'block';
             setTimeout(() => msg.style.display = 'none', 3000);
-            refreshDropdown();
-            document.getElementById('selectAnak').value = key;
+        }
+
+        async function kirimKeCloud(payload) {
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            } catch (e) {
+                console.error("Gagal simpan ke Cloud", e);
+            }
         }
     </script>
 
