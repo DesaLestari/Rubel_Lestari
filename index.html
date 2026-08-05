@@ -14,10 +14,9 @@
         .tab-content { display: none; background: white; padding: 25px; margin-top: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .tab-content.active { display: block; }
 
-        input, select { width: 100%; max-width: 300px; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; display: block; }
+        input, select { width: 100%; max-width: 320px; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; display: block; }
         .btn-submit { background: #0d5c3a; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
 
-        /* Style Kartu Laporan */
         .report-card { border: 2px solid #0d5c3a; border-radius: 8px; margin-top: 20px; overflow: hidden; display: none; }
         .report-header { background: #0d5c3a; color: white; padding: 15px; }
         .report-body { padding: 20px; }
@@ -25,6 +24,7 @@
         .grid-iuran { display: flex; gap: 10px; margin: 15px 0; }
         .box-iuran { flex: 1; padding: 10px; border-radius: 6px; text-align: center; }
         .box-penyejuk { background: #fffbe6; padding: 15px; border-radius: 6px; border-left: 4px solid #ffc107; margin-top: 15px; }
+        .img-kegiatan { width: 100%; max-height: 250px; object-fit: cover; border-radius: 6px; margin-top: 10px; display: none; }
 
         footer { margin-top: 40px; text-align: center; color: #777; font-size: 14px; border-top: 1px solid #ddd; padding-top: 15px; }
         footer a { color: #888; text-decoration: none; font-size: 13px; }
@@ -48,48 +48,46 @@
 
     <div id="tab-wali" class="tab-content active">
         <h3>PILIH NAMA ANAK BAPAK/IBU:</h3>
-        <select id="namaAnak">
-            <option value="">-- Pilih Nama Anak --</option>
-            <option value="hana">hana (SD)</option>
-        </select>
+        <select id="namaAnak"></select>
 
         <h4>🔒 Masukkan PIN Rahasia 4-Digit Anak:</h4>
         <input type="password" id="pinInput" maxlength="4" placeholder="****">
         <button class="btn-submit" onclick="bukaLaporan()">Buka Laporan</button>
 
-        <!-- Kartu Laporan Hasil Update -->
+        <!-- Kartu Laporan -->
         <div id="laporanBox" class="report-card">
             <div class="report-header">
-                <h3 style="margin:0;">Laporan Kebanggaan Bapak/Ibu <span id="outNama">hana</span></h3>
-                <small>Memantau Perkembangan: <span id="outNama2">hana</span></small>
+                <h3 style="margin:0;">Laporan Kebanggaan Bapak/Ibu <span id="outNama"></span></h3>
+                <small>Memantau Perkembangan: <span id="outNama2"></span></small>
             </div>
             <div class="report-body">
                 <div class="box-salam">
                     🌱 <strong>SALAM HANGAT DARI TUTOR!</strong><br>
-                    Terima kasih Bapak/Ibu sudah mempercayakan <span id="outNama3">hana</span>.<br>
-                    <strong>Impian Anak:</strong> <span id="outImpian" style="color:#0d5c3a;">dokter</span>
+                    Terima kasih Bapak/Ibu sudah mempercayakan <span id="outNama3"></span>.<br>
+                    <strong>Impian Anak:</strong> <span id="outImpian" style="color:#0d5c3a;"></span>
                 </div>
 
                 <div>
-                    📸 <strong>RIWAYAT TANGGAL & FOTO SUASANA BELAJAR</strong> (<span id="outSesi">1 SESI</span>)
+                    📸 <strong>RIWAYAT TANGGAL & FOTO SUASANA BELAJAR</strong> (<span id="outSesi"></span>)
+                    <img id="outFoto" class="img-kegiatan" src="" alt="Foto Kegiatan">
                 </div>
 
                 <h4 style="margin-top:20px;">CATATAN TRANSPARANSI IURAN</h4>
                 <div class="grid-iuran">
                     <div class="box-iuran" style="background: #f5f5f5;">
-                        <small>Total Iuran</small><br><strong id="outTotal">Rp 3.000</strong>
+                        <small>Total Iuran</small><br><strong id="outTotal"></strong>
                     </div>
                     <div class="box-iuran" style="background: #e6f7ff;">
-                        <small>Titipan Diterima</small><br><strong id="outTitipan" style="color:#1890ff;">Rp 0</strong>
+                        <small>Titipan Diterima</small><br><strong id="outTitipan" style="color:#1890ff;"></strong>
                     </div>
                     <div class="box-iuran" style="background: #fff1f0;">
-                        <small>Sisa Catatan</small><br><strong id="outSisa" style="color:#f5222d;">Rp 3.000</strong>
+                        <small>Sisa Catatan</small><br><strong id="outSisa" style="color:#f5222d;"></strong>
                     </div>
                 </div>
 
                 <div class="box-penyejuk">
                     💡 <strong>PESAN PENYEJUK HARI INI</strong><br>
-                    <i id="outPesan">"Setiap anak memiliki kecepatan belajarnya masing-masing."</i>
+                    <i id="outPesan"></i>
                 </div>
             </div>
         </div>
@@ -106,6 +104,36 @@
     </footer>
 
     <script>
+        const defaultData = {
+            "hana": {
+                nama: "hana (SD)",
+                pin: "1234",
+                impian: "dokter",
+                sesi: "1 SESI",
+                foto: "",
+                totalIuran: 3000,
+                titipan: 0,
+                pesan: "Setiap anak memiliki kecepatan belajarnya masing-masing. Menemani mereka dengan sabar adalah kunci utama."
+            }
+        };
+
+        function getDatabase() {
+            const saved = localStorage.getItem('rubel_db');
+            return saved ? JSON.parse(saved) : defaultData;
+        }
+
+        function loadDropdown() {
+            const db = getDatabase();
+            const select = document.getElementById('namaAnak');
+            select.innerHTML = '<option value="">-- Pilih Nama Anak --</option>';
+            for (let key in db) {
+                let opt = document.createElement('option');
+                opt.value = key;
+                opt.innerText = db[key].nama;
+                select.appendChild(opt);
+            }
+        }
+
         function openTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
@@ -114,35 +142,46 @@
         }
 
         function bukaLaporan() {
-            const anak = document.getElementById('namaAnak').value;
+            const key = document.getElementById('namaAnak').value;
             const pin = document.getElementById('pinInput').value;
 
-            if (!anak) {
+            if (!key) {
                 alert("Pilih nama anak terlebih dahulu!");
                 return;
             }
 
-            // PIN Default untuk tes misal 1234
-            if (pin === "1234" || pin.length === 4) {
-                // Ambil data terbaru dari memori
-                const dataSaved = localStorage.getItem('data_hana');
-                if (dataSaved) {
-                    const data = JSON.parse(dataSaved);
-                    document.getElementById('outImpian').innerText = data.impian;
-                    document.getElementById('outSesi').innerText = data.sesi;
-                    document.getElementById('outTotal').innerText = 'Rp ' + Number(data.totalIuran).toLocaleString('id-ID');
-                    document.getElementById('outTitipan').innerText = 'Rp ' + Number(data.titipan).toLocaleString('id-ID');
-                    
-                    const sisa = Number(data.totalIuran) - Number(data.titipan);
-                    document.getElementById('outSisa').innerText = 'Rp ' + sisa.toLocaleString('id-ID');
-                    document.getElementById('outPesan').innerText = '"' + data.pesan + '"';
+            const db = getDatabase();
+            const data = db[key];
+
+            if (data && pin === data.pin) {
+                document.getElementById('outNama').innerText = data.nama;
+                document.getElementById('outNama2').innerText = data.nama;
+                document.getElementById('outNama3').innerText = data.nama;
+                document.getElementById('outImpian').innerText = data.impian;
+                document.getElementById('outSesi').innerText = data.sesi;
+                document.getElementById('outTotal').innerText = 'Rp ' + Number(data.totalIuran).toLocaleString('id-ID');
+                document.getElementById('outTitipan').innerText = 'Rp ' + Number(data.titipan).toLocaleString('id-ID');
+                
+                const sisa = Number(data.totalIuran) - Number(data.titipan);
+                document.getElementById('outSisa').innerText = 'Rp ' + sisa.toLocaleString('id-ID');
+                document.getElementById('outPesan').innerText = '"' + data.pesan + '"';
+
+                const img = document.getElementById('outFoto');
+                if (data.foto) {
+                    img.src = data.foto;
+                    img.style.display = 'block';
+                } else {
+                    img.style.display = 'none';
                 }
 
                 document.getElementById('laporanBox').style.display = 'block';
             } else {
-                alert("PIN Salah! Masukkan 4 digit angka.");
+                alert("PIN Salah! Periksa kembali 4-digit PIN rahasia anak.");
             }
         }
+
+        // Jalankan otomatis saat halaman dimuat
+        loadDropdown();
     </script>
 
 </body>
